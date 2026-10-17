@@ -18,7 +18,7 @@ type Cat = "all" | "new" | "old";
 type Sort = "new" | "price_asc" | "price_desc";
 
 export default function Home() {
-  const { settings, session } = useAuth();
+  const { settings, session, profile } = useAuth();
   const signedIn = !!session;
   const cy = settings.cutoff_year;
   const [cat, setCat] = useState<Cat>("all");
@@ -308,7 +308,7 @@ export default function Home() {
             <T style={{ textAlign: "center", color: C.body, lineHeight: 22 }}>
               {query || brand
                 ? "Шүүлтүүрээ сулруулах эсвэл ийм зар орохоор мэдэгдэл авах боломжтой."
-                : "Одоогоор идэвхтэй зар алга. Анхны зараа тавиарай!"}
+                : "Одоогоор идэвхтэй зар алга. Удахгүй шинэ машинууд нэмэгдэнэ."}
             </T>
             {query || brand ? (
               <Button
@@ -321,9 +321,9 @@ export default function Home() {
                 }}
                 style={{ alignSelf: "stretch" }}
               />
-            ) : (
+            ) : profile?.role === "admin" ? (
               <Button title="Зар нэмэх" onPress={() => router.push("/post")} style={{ alignSelf: "stretch" }} />
-            )}
+            ) : null}
           </View>
         )
       }

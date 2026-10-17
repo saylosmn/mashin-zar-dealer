@@ -9,7 +9,7 @@ import { IconBell, IconHome, IconList, IconPlus, IconUser } from "./icons";
  * Админ/лизингийн панел руу орох товч толгой хэсэгт (SiteHeader) байнга харагддаг тул
  * энд Профайл таб бүх хэрэглэгчид үлдэнэ.
  */
-export function MobileTabBar({ unread }: { unread: number }) {
+export function MobileTabBar({ unread, admin = false }: { unread: number; admin?: boolean }) {
   const path = usePathname();
   // Чатын цонхонд бичих талбарыг халхлахгүй
   if (/^\/messages\/[^/]+$/.test(path)) return null;
@@ -23,8 +23,11 @@ export function MobileTabBar({ unread }: { unread: number }) {
       on: is("/notifications"),
       badge: unread,
     },
-    null,
-    { href: "/my", label: "Миний зар", icon: <IconList size={22} />, on: is("/my") },
+    // Дилерийн хувилбар: зарыг зөвхөн админ нэмнэ. Хэрэглэгчид чат, зээлийн хүсэлт харагдана.
+    admin ? null : { href: "/messages", label: "Чат", icon: <IconChat />, on: is("/messages") },
+    admin
+      ? { href: "/my", label: "Миний зар", icon: <IconList size={22} />, on: is("/my") }
+      : { href: "/loans", label: "Зээл", icon: <IconList size={22} />, on: is("/loans") },
     { href: "/profile", label: "Профайл", icon: <IconUser size={22} />, on: is("/profile") },
   ];
   return (
@@ -61,5 +64,23 @@ export function MobileTabBar({ unread }: { unread: number }) {
         ),
       )}
     </nav>
+  );
+}
+
+function IconChat() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
+    </svg>
   );
 }

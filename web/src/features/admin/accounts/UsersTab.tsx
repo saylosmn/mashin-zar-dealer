@@ -27,7 +27,6 @@ export async function UsersTab({ back, q, page }: { back: string; q?: string; pa
   for (const a of ads ?? []) adCount.set(a.user_id, (adCount.get(a.user_id) ?? 0) + 1);
 
   const pageHref = (p: number) => `/admin/users?tab=users&page=${p}${q ? `&q=${encodeURIComponent(q)}` : ""}`;
-  const promote = (tab: string, email: string) => `/admin/users?tab=${tab}&email=${encodeURIComponent(email)}`;
 
   return (
     <>
@@ -71,16 +70,6 @@ export async function UsersTab({ back, q, page }: { back: string; q?: string; pa
                 <td>
                   <div className="flex gap-1.5">
                     <BlockButton id={u.id} blocked={u.is_blocked} back={back} />
-                    {u.email && (
-                      <>
-                        <Link href={promote("dealers", u.email)} className="btn btn-sm btn-ghost">
-                          Авто худалдаа болгох
-                        </Link>
-                        <Link href={promote("agents", u.email)} className="btn btn-sm btn-ghost">
-                          Агент болгох
-                        </Link>
-                      </>
-                    )}
                   </div>
                 </td>
               </tr>

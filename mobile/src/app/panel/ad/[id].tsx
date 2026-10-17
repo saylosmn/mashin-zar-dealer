@@ -377,9 +377,16 @@ export default function PanelAd() {
 
             {ad.status === "active" && (
               <Button
-                title="Зарагдсан тайлан илгээх"
-                icon="file-text"
-                onPress={() => router.push({ pathname: "/panel/reports", params: { ad: ad.id } })}
+                title="Зарагдсан болгох"
+                icon="check"
+                onPress={async () => {
+                  if (!(await confirm("Зарагдсан болгох уу?", `${ad.brand} ${ad.model}`, "Зарагдсан"))) return;
+                  act(
+                    "sold",
+                    () => staffRpc("dealer_set_status", { p_ad: ad.id, p_status: "sold", p_price: null }),
+                    "Зарагдсан боллоо",
+                  );
+                }}
               />
             )}
 

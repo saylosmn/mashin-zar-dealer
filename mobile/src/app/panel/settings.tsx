@@ -72,20 +72,7 @@ export default function PanelSettings() {
           </T>
         </View>
 
-        <View style={s.section}>
-          <T w="bold" style={s.h2}>
-            Санал
-          </T>
-          <Field label="Санал тооцох хувь (%)" hint="Санал = зарын үнэ × энэ хувь. Хоосон бол санал илгээх боломжгүй.">
-            <Input
-              keyboardType="decimal-pad"
-              value={pct}
-              onChangeText={(t) => setPct(t.replace(/[^0-9.,]/g, ""))}
-              placeholder="жишээ нь 85"
-            />
-          </Field>
-        </View>
-
+        {/* Дилерийн хувилбар: санал (шимтгэл) тохиргоо хасагдсан, утга хэвээр хадгалагдана */}
         <View style={s.section}>
           <T w="bold" style={s.h2}>
             Зар

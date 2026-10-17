@@ -4,8 +4,6 @@ import { requireAdmin } from "@/lib/data";
 import { num } from "@/lib/format";
 import { pendingCount } from "@/lib/panel";
 import { Flash, PanelShell } from "@/components/PanelShell";
-import { AgentsTab } from "@/features/admin/accounts/AgentsTab";
-import { DealersTab } from "@/features/admin/accounts/DealersTab";
 import { StaffTab } from "@/features/admin/accounts/StaffTab";
 import { UsersTab } from "@/features/admin/accounts/UsersTab";
 
@@ -14,8 +12,6 @@ export const metadata = { title: "Админ · Аккаунтууд" };
 const TABS = [
   { key: "staff", label: "Админ", role: "admin" },
   { key: "users", label: "Хэрэглэгч", role: "user" },
-  { key: "dealers", label: "Авто худалдаа", role: "dealer" },
-  { key: "agents", label: "Агент", role: "agent" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -55,8 +51,6 @@ export default async function AdminUsers({
       <Flash ok={sp.ok} err={sp.err} />
 
       {tab === "staff" && <StaffTab me={me} back={back} />}
-      {tab === "agents" && <AgentsTab back={back} email={sp.email} />}
-      {tab === "dealers" && <DealersTab back={back} email={sp.email} />}
       {tab === "users" && <UsersTab back={back} q={sp.q} page={Math.max(1, Number(sp.page) || 1)} />}
     </PanelShell>
   );

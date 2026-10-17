@@ -7,8 +7,8 @@ export default function NotFound() {
       <header className="bg-ink">
         <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-4 px-6 py-3.5">
           <Logo />
-          <Link href="/post" className="btn btn-yellow">
-            + Зар нэмэх
+          <Link href="/" className="btn btn-yellow">
+            Зарууд
           </Link>
         </div>
       </header>

@@ -15,7 +15,7 @@ import type { Ad, AdStatus, Payment, PublicAd } from "@shared/types";
 
 type OpenPay = Pick<Payment, "ad_id" | "status" | "ref">;
 
-export const metadata = { title: "Миний зарууд" };
+export const metadata = { title: "Зарууд" };
 
 const TABS: { key?: AdStatus | "saved"; label: string }[] = [
   { label: "Бүгд" },
@@ -53,9 +53,13 @@ export default async function MyAdsPage({
     ? await supabase.from("public_ads").select("*").in("id", favIds)
     : { data: [] as PublicAd[] };
 
-  const dealer = me.role === "dealer";
-  const tabs = dealer ? [...TABS.slice(0, 3), { key: "hidden" as const, label: "Нуусан" }, ...TABS.slice(3)] : TABS;
-  const tab = sp.tab;
+  // Дилерийн хувилбар: зар зөвхөн админ нэмнэ. Хэрэглэгчид зөвхөн хадгалсан зараа харна.
+  const admin = me.role === "admin";
+  const dealer = admin || me.role === "dealer";
+  const tabs: typeof TABS = admin
+    ? [TABS[0], { key: "active", label: "Идэвхтэй" }, { key: "hidden", label: "Нуусан" }, ...TABS.slice(3)]
+    : [{ key: "saved", label: "Хадгалсан" }];
+  const tab = admin ? sp.tab : "saved";
   const shown = tab && tab !== "saved" ? ads.filter((a) => a.status === tab) : ads;
   const countOf = (k?: string) =>
     k === "saved" ? (favAds ?? []).length : k ? ads.filter((a) => a.status === k).length : ads.length;
@@ -93,16 +97,15 @@ export default async function MyAdsPage({
           {sp.err}
         </p>
       )}
-      {dealer && (
+      {admin && (
         <p className="m-0 text-[13px] text-muted">
-          Та <strong className="text-ink">{me.shop_name ?? "Авто худалдаа"}</strong> эрхтэй: зар тань шууд нийтлэгдэх
-          бөгөөд засах, түр нуух, зарагдсан болгох боломжтой.
+          Зар тань шууд нийтлэгдэх бөгөөд засах, түр нуух, зарагдсан болгох боломжтой.
         </p>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-baseline gap-3">
-          <h1 className="h-display m-0 text-[clamp(24px,3vw,32px)]">Миний зарууд</h1>
+          <h1 className="h-display m-0 text-[clamp(24px,3vw,32px)]">{admin ? "Миний зарууд" : "Хадгалсан зарууд"}</h1>
           <Link href="/loans" className="text-[14px] font-semibold">
             Лизингийн хүсэлтүүд →
           </Link>

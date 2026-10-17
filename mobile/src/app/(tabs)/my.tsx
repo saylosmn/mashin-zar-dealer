@@ -7,24 +7,23 @@ import { GuestGate } from "@/components/GuestGate";
 import { C } from "@/lib/theme";
 import { errMsg, money } from "@/lib/format";
 import { Button, CardSkeleton, Photo, StateView, StatusBadge, T, s } from "@/components/ui";
-import type { Ad, AdStatus, Payment, PublicAd } from "@shared/types";
+import type { Ad, AdStatus, PublicAd } from "@shared/types";
 import { useLiveSync } from "@/lib/live";
 import { confirm, openContract, staffRpc } from "@/lib/staff";
 import { expiryInfo, isFeatured, recentlyRequested } from "@shared/commission";
-import { PAY_STATUS, needsAction } from "@/lib/payments";
-
-type OpenPay = Pick<Payment, "ad_id" | "status" | "ref">;
 
 type Tab = "all" | AdStatus | "saved";
 
 function MyAdsInner() {
   const { session, profile, settings } = useAuth();
-  const dealer = profile?.role === "dealer";
+  // Дилерийн хувилбар: зарыг зөвхөн админ нэмнэ. Хэрэглэгчид зөвхөн хадгалсан зар харагдана.
+  const admin = profile?.role === "admin";
+  const dealer = admin || profile?.role === "dealer";
   const uid = session?.user.id;
   const [ads, setAds] = useState<Ad[]>([]);
   const [saved, setSaved] = useState<PublicAd[]>([]);
-  const [payOf, setPayOf] = useState<Map<string | null, OpenPay>>(new Map());
-  const [tab, setTab] = useState<Tab>("all");
+  const [tabState, setTab] = useState<Tab>("all");
+  const tab: Tab = admin ? tabState : "saved";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,13 +37,6 @@ function MyAdsInner() {
         .order("created_at", { ascending: false });
       if (e) throw e;
       setAds((data ?? []) as Ad[]);
-      // Нээлттэй төлбөрүүд (төлөх, шалгагдаж буй, ороогүй)
-      const { data: pays } = await supabase
-        .from("payments")
-        .select("ad_id,status,ref")
-        .eq("user_id", uid)
-        .in("status", ["awaiting", "submitted", "rejected"]);
-      setPayOf(new Map(((pays ?? []) as OpenPay[]).map((p) => [p.ad_id, p])));
       const { data: favs } = await supabase.from("favorites").select("ad_id").eq("user_id", uid);
       const ids = (favs ?? []).map((f) => f.ad_id);
       if (ids.length) {
@@ -64,7 +56,7 @@ function MyAdsInner() {
     }, [load]),
   );
   // Админ батлах, санал илгээх, зарагдсан болгоход төлөв шууд солигдоно
-  useLiveSync(() => load(), ["ads", "payments"]);
+  useLiveSync(() => load(), ["ads"]);
 
   async function remove(a: Ad) {
     const ok = await confirm(
@@ -92,14 +84,15 @@ function MyAdsInner() {
 
   const count = (t: Tab) =>
     t === "all" ? ads.length : t === "saved" ? saved.length : ads.filter((a) => a.status === t).length;
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "all", label: "Бүгд" },
-    ...(dealer ? [] : [{ key: "pending" as Tab, label: "Хүлээгдэж" }]),
-    { key: "active", label: "Идэвхтэй" },
-    ...(dealer ? [{ key: "hidden" as Tab, label: "Нуусан" }] : []),
-    { key: "sold", label: "Зарагдсан" },
-    { key: "saved", label: "Хадгалсан" },
-  ];
+  const tabs: { key: Tab; label: string }[] = admin
+    ? [
+        { key: "all", label: "Бүгд" },
+        { key: "active", label: "Идэвхтэй" },
+        { key: "hidden", label: "Нуусан" },
+        { key: "sold", label: "Зарагдсан" },
+        { key: "saved", label: "Хадгалсан" },
+      ]
+    : [{ key: "saved", label: "Хадгалсан" }];
 
   async function setStatus(a: Ad, status: "active" | "hidden" | "sold") {
     if (status === "sold") {
@@ -238,22 +231,6 @@ function MyAdsInner() {
                     {money(a.price)}
                   </T>
                   <AdLife a={a} />
-                  {payOf.get(a.id) ? (
-                    <Pressable
-                      onPress={() => router.push(`/pay/${a.id}`)}
-                      style={{
-                        alignSelf: "flex-start",
-                        backgroundColor: PAY_STATUS[payOf.get(a.id)!.status].bg,
-                        borderRadius: 6,
-                        paddingHorizontal: 7,
-                        paddingVertical: 3,
-                      }}
-                    >
-                      <T w="semibold" style={{ fontSize: 11, color: PAY_STATUS[payOf.get(a.id)!.status].fg }}>
-                        💳 {PAY_STATUS[payOf.get(a.id)!.status].label}
-                      </T>
-                    </Pressable>
-                  ) : null}
                 </View>
               </Pressable>
               {(a.status !== "sold" || a.contract_id) && (
@@ -299,26 +276,6 @@ function MyAdsInner() {
                   ) : null}
                   {(a.status === "active" || a.status === "hidden") && expiryInfo(a.expires_at).renewable ? (
                     <Button small title="Сунгах" icon="refresh-cw" variant="yellow" onPress={() => renew(a)} />
-                  ) : null}
-                  {payOf.get(a.id) && needsAction(payOf.get(a.id)!.status) ? (
-                    <Button
-                      small
-                      title="Төлөх"
-                      icon="credit-card"
-                      variant="yellow"
-                      onPress={() => router.push(`/pay/${a.id}`)}
-                    />
-                  ) : a.status === "active" &&
-                    !expiryInfo(a.expires_at).expired &&
-                    !isFeatured(a.featured_until) &&
-                    !payOf.get(a.id) ? (
-                    <Button
-                      small
-                      title="Онцлох"
-                      icon="star"
-                      variant="ghost"
-                      onPress={() => router.push(`/pay/${a.id}`)}
-                    />
                   ) : null}
                   {dealer && a.status !== "sold" ? (
                     <>
@@ -379,7 +336,7 @@ function AdLife({ a }: { a: Ad }) {
 
 export default function MyAds() {
   return (
-    <GuestGate icon="list" title="Миний зар" text="Нэвтэрч зараа тавих, хадгалсан машинуудаа харна." next="/my">
+    <GuestGate icon="heart" title="Хадгалсан" text="Нэвтэрч хадгалсан машинуудаа харна." next="/my">
       <MyAdsInner />
     </GuestGate>
   );

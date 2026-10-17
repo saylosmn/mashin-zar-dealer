@@ -262,7 +262,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                 <p className="m-0 text-[15px] leading-relaxed text-body">
                   {hasFilters
                     ? "Шүүлтүүрээ сулруулах эсвэл ийм зар орохоор мэдэгдэл авах боломжтой."
-                    : "Одоогоор идэвхтэй зар алга. Анхны зараа тавиарай!"}
+                    : "Одоогоор идэвхтэй зар алга. Удахгүй шинэ машинууд нэмэгдэнэ."}
                 </p>
               </div>
               <div className="flex flex-wrap justify-center gap-2.5">
@@ -271,9 +271,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                     Шүүлтүүр цэвэрлэх
                   </Link>
                 )}
-                <Link href={profile ? "/post" : loginHref("/post")} className="btn btn-lg btn-ink">
-                  Зар нэмэх
-                </Link>
+                {profile?.role === "admin" && (
+                  <Link href="/post" className="btn btn-lg btn-ink">
+                    Зар нэмэх
+                  </Link>
+                )}
               </div>
             </div>
           ) : (

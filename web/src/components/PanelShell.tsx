@@ -12,23 +12,12 @@ async function openFlags() {
   return count ?? 0;
 }
 
-/** Шалгах (хэрэглэгч «Төлсөн» дарсан) төлбөрийн тоо */
-async function submittedPayments() {
-  const supabase = await createClient();
-  const { count } = await supabase
-    .from("payments")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "submitted");
-  return count ?? 0;
-}
-
 export type NavItem = { href: string; label: string; badge?: number; key: string };
 
 export async function PanelShell({
   profile,
   area,
   active,
-  pending,
   partner,
   children,
 }: {
@@ -41,10 +30,8 @@ export async function PanelShell({
   children: React.ReactNode;
 }) {
   const isAdmin = profile.role === "admin";
-  const [flags, payments] = await Promise.all([
-    area === "leasing" ? 0 : openFlags(),
-    area === "admin" ? submittedPayments() : 0,
-  ]);
+  // Дилерийн хувилбар: зар шалгах, төлбөр, шимтгэлийн тайлан цэснээс хасагдсан
+  const flags = area === "leasing" ? 0 : await openFlags();
   const nav: NavItem[] =
     area === "leasing"
       ? [
@@ -67,12 +54,9 @@ export async function PanelShell({
       : [
           { key: "admin", href: "/admin", label: "Самбар" },
           { key: "admin-users", href: "/admin/users", label: "Аккаунтууд" },
-          { key: "admin-review", href: "/admin/review", label: "Шинэ зар ба санал", badge: pending },
-          { key: "admin-ads", href: "/admin/ads", label: "Бүх зар" },
-          { key: "admin-sellers", href: "/admin/sellers", label: "Зар тавьсан хүмүүс" },
+          { key: "admin-ads", href: "/admin/ads", label: "Зарууд" },
+          { key: "post", href: "/post", label: "+ Зар нэмэх" },
           { key: "admin-flags", href: "/admin/flags", label: "Гомдол", badge: flags },
-          { key: "admin-payments", href: "/admin/payments", label: "Төлбөрүүд", badge: payments },
-          { key: "admin-reports", href: "/admin/reports", label: "Тайлангууд" },
           { key: "admin-leasing", href: "/admin/leasing", label: "Лизинг: компаниуд" },
           { key: "leasing", href: "/leasing?partner=all", label: "Лизинг: хүсэлтүүд" },
           { key: "admin-notif", href: "/admin/notifications", label: "Мэдэгдэл" },

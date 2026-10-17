@@ -33,7 +33,7 @@ export default async function AdminDashboard() {
     sold,
     soldMonth,
     flagsOpen,
-    offers,
+    loans,
     weekly,
     log,
     pending,
@@ -48,7 +48,7 @@ export default async function AdminDashboard() {
     supabase.from("ads").select("id", head).eq("status", "sold"),
     supabase.from("ads").select("id", head).eq("status", "sold").gte("sold_at", monthStart),
     supabase.from("ad_flags").select("id", head).eq("status", "open"),
-    supabase.from("ads").select("id", head).not("offer_sent_at", "is", null),
+    supabase.from("loan_requests").select("id", head),
     supabase.from("ads").select("created_at").gte("created_at", weeks[0].toISOString()),
     supabase.from("activity_log").select("id,action,created_at").order("id", { ascending: false }).limit(8),
     pendingCount(),
@@ -87,8 +87,8 @@ export default async function AdminDashboard() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="h-display m-0 text-[28px]">Самбар</h1>
         <div className="flex flex-wrap gap-2.5">
-          <Link href="/admin/review" className="btn btn-ghost">
-            Шинэ зар шалгах{pending ? ` · ${pending}` : ""}
+          <Link href="/admin/ads" className="btn btn-ghost">
+            Зарууд
           </Link>
           <Link href="/post" className="btn btn-ink">
             + Зар нэмэх
@@ -101,18 +101,14 @@ export default async function AdminDashboard() {
           value={(users.count ?? 0).toLocaleString("en-US")}
           sub={`+${usersMonth.count ?? 0} энэ сард`}
         />
-        <Kpi dark label="Хүлээгдэж буй зар" value={pending} sub="Шалгах →" href="/admin/review" />
-        <Kpi
-          label="Нийт зар"
-          value={(totalAds.count ?? 0).toLocaleString("en-US")}
-          sub={`Илгээсэн санал: ${offers.count ?? 0}`}
-        />
+        <Kpi dark label="Зарагдсан, энэ сар" value={soldMonth.count ?? 0} sub={`Нийт ${sold.count ?? 0}`} />
+        <Kpi label="Нийт зар" value={(totalAds.count ?? 0).toLocaleString("en-US")} sub="Бүх цаг үеийн" />
         <Kpi
           label="Идэвхтэй зар"
           value={active.count ?? 0}
           sub={`${cy}+: ${activeNew.count ?? 0} · өмнө: ${(active.count ?? 0) - (activeNew.count ?? 0)}`}
         />
-        <Kpi label="Зарагдсан" value={sold.count ?? 0} sub={`${soldMonth.count ?? 0} энэ сард`} />
+        <Kpi label="Зээлийн хүсэлт" value={loans.count ?? 0} sub="Лизинг →" href="/leasing?partner=all" />
         <Kpi label="Нээлттэй гомдол" value={flagsOpen.count ?? 0} sub="Гомдол →" href="/admin/flags" />
       </div>
       <div className="flex flex-wrap items-start gap-4.5">

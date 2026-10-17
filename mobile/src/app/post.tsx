@@ -42,7 +42,8 @@ export default function PostScreen() {
   const uid = session?.user.id ?? profile?.id ?? "";
   const net = useNetInfo();
   const { max_photos: maxPhotos, min_photos: minPhotos, cutoff_year: cutoff } = settings;
-  const dealer = profile?.role === "dealer";
+  // Дилерийн хувилбар: зарыг зөвхөн админ нэмнэ, шууд нийтлэгдэнэ
+  const dealer = profile?.role === "admin" || profile?.role === "dealer";
   const ct = termsFrom(settings);
   const featuredPrice = settings.featured_price ?? 50000;
   const featuredDays = settings.featured_days ?? 7;
@@ -74,9 +75,8 @@ export default function PostScreen() {
   const draft = toDraft(fields);
 
   useEffect(() => {
-    if (profile && !profile.profile_completed)
-      router.replace({ pathname: "/complete-profile", params: { next: "post" } });
-  }, [profile]);
+    if (!session || (profile && profile.role !== "admin")) router.replace("/");
+  }, [profile, session]);
 
   const back = useCallback(() => {
     setError(null);
@@ -370,23 +370,25 @@ export default function PostScreen() {
         </View>
 
         <AdDetailsForm fields={fields} set={set} cutoff={cutoff} />
-        <Field
-          label="Агентын код (заавал биш)"
-          hint={
-            agent && agent.code === agentCode
-              ? `✓ Агент: ${agent.name}`
-              : "Танд манай агент туслалцаа үзүүлсэн бол түүний кодыг оруулна уу."
-          }
-        >
-          <Input
-            value={agentCode}
-            onChangeText={(t) => setAgentCode(agentCodeInput(t))}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            mono
-            placeholder="K7M2QX"
-          />
-        </Field>
+        {!dealer && (
+          <Field
+            label="Агентын код (заавал биш)"
+            hint={
+              agent && agent.code === agentCode
+                ? `✓ Агент: ${agent.name}`
+                : "Танд манай агент туслалцаа үзүүлсэн бол түүний кодыг оруулна уу."
+            }
+          >
+            <Input
+              value={agentCode}
+              onChangeText={(t) => setAgentCode(agentCodeInput(t))}
+              autoCapitalize="characters"
+              autoCorrect={false}
+              mono
+              placeholder="K7M2QX"
+            />
+          </Field>
+        )}
       </ScrollView>
       <BottomBar error={error}>
         <Button

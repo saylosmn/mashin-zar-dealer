@@ -7,7 +7,6 @@ import { C } from "@/lib/theme";
 import { T } from "@/components/ui";
 import { useAuth } from "@/lib/auth";
 import { isStaff } from "@/lib/staff";
-import { requireLogin } from "@/lib/guest";
 import { useChatUnread } from "@/lib/chat-unread";
 
 const ITEMS: Record<string, { label: string; icon: keyof typeof Feather.glyphMap }> = {
@@ -22,6 +21,8 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { profile, session } = useAuth();
   const staff = isStaff(profile) || profile?.role === "leasing";
+  // Дилерийн хувилбар: «Зар нэмэх» товч зөвхөн админд. Хэрэглэгчид «Миний зар» биш «Хадгалсан».
+  const admin = profile?.role === "admin";
   const chats = useChatUnread(!!session);
   return (
     <Tabs
@@ -31,7 +32,7 @@ export default function TabsLayout() {
         const cells = routes.map((r) => {
           const idx = state.routes.indexOf(r);
           const on = state.index === idx;
-          const it = ITEMS[r.name];
+          const it = r.name === "my" && !admin ? { label: "Хадгалсан", icon: "heart" as const } : ITEMS[r.name];
           return (
             <Pressable
               key={r.key}
@@ -84,26 +85,28 @@ export default function TabsLayout() {
             }}
           >
             {cells.slice(0, 2)}
-            <View style={{ flex: 1, alignItems: "center" }}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel="Зар нэмэх"
-                onPress={() => (session ? router.push("/post") : requireLogin("/post"))}
-                style={{
-                  width: 56,
-                  height: 56,
-                  marginTop: -28,
-                  borderRadius: 18,
-                  backgroundColor: C.yellow,
-                  borderWidth: 4,
-                  borderColor: C.paper,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Feather name="plus" size={26} color={C.ink} />
-              </Pressable>
-            </View>
+            {admin ? (
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Зар нэмэх"
+                  onPress={() => router.push("/post")}
+                  style={{
+                    width: 56,
+                    height: 56,
+                    marginTop: -28,
+                    borderRadius: 18,
+                    backgroundColor: C.yellow,
+                    borderWidth: 4,
+                    borderColor: C.paper,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Feather name="plus" size={26} color={C.ink} />
+                </Pressable>
+              </View>
+            ) : null}
             {cells.slice(2)}
           </View>
         );

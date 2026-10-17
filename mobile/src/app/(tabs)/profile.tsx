@@ -75,9 +75,6 @@ function ProfileTabInner() {
       />
       <Button title="Миний лизингийн хүсэлтүүд" variant="ghost" icon="percent" onPress={() => router.push("/loans")} />
       <Button title="Машин харьцуулах" variant="ghost" icon="shuffle" onPress={() => router.push("/compare")} />
-      {profile?.role === "agent" && (
-        <Button title="Агентын самбар" icon="award" onPress={() => router.push("/agent")} />
-      )}
       {profile?.role === "leasing" && (
         <>
           <Button title="Лизингийн панел" icon="briefcase" onPress={() => router.push("/panel")} />

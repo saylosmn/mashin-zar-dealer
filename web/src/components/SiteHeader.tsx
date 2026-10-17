@@ -47,11 +47,6 @@ export function SiteHeader({
               Лизинг
             </Link>
           )}
-          {profile?.role === "agent" && (
-            <Link href="/agent" className="btn btn-dark-ghost px-3 sm:px-4">
-              Агент
-            </Link>
-          )}
           {profile && (
             <Link href="/messages" aria-label="Чат" className="btn btn-dark-ghost relative w-11 px-0">
               <svg
@@ -106,13 +101,21 @@ export function SiteHeader({
           </Link>
           {profile ? (
             <>
-              <Link href="/my" className="btn btn-dark-ghost hidden sm:inline-flex">
-                Миний зар
-              </Link>
-              <Link href="/post" className="btn btn-yellow hidden sm:inline-flex">
-                <IconPlus size={18} />
-                <span className="hidden sm:inline">Зар нэмэх</span>
-              </Link>
+              {staff ? (
+                <Link href="/post" className="btn btn-yellow hidden sm:inline-flex">
+                  <IconPlus size={18} />
+                  <span className="hidden sm:inline">Зар нэмэх</span>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/my" className="btn btn-dark-ghost hidden sm:inline-flex">
+                    Хадгалсан
+                  </Link>
+                  <Link href="/loans" className="btn btn-dark-ghost hidden sm:inline-flex">
+                    Зээлийн хүсэлт
+                  </Link>
+                </>
+              )}
               <Link
                 href="/profile"
                 aria-label="Профайл"
@@ -122,12 +125,7 @@ export function SiteHeader({
               </Link>
             </>
           ) : (
-            <>
-              <Link href="/login?next=%2Fpost" className="btn btn-dark-ghost hidden sm:inline-flex">
-                <IconPlus size={18} /> Зар нэмэх
-              </Link>
-              <LoginLink className="btn btn-yellow">Нэвтрэх</LoginLink>
-            </>
+            <LoginLink className="btn btn-yellow">Нэвтрэх</LoginLink>
           )}
         </nav>
       </div>

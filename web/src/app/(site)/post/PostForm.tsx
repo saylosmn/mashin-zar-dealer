@@ -315,22 +315,24 @@ export function PostForm({
             />
             <span className="h-display text-[22px]">₮</span>
           </div>
-          <label className="label mt-1 max-w-[420px]">
-            Агентын код <span className="font-normal text-muted">(заавал биш)</span>
-            <input
-              value={agentCode}
-              onChange={(e) => setAgentCode(agentCodeInput(e.target.value))}
-              autoComplete="off"
-              placeholder="Жишээ: K7M2QX"
-              className="input mono font-normal"
-            />
-            {agent && agent.code === agentCode && (
-              <span className="text-[13px] font-normal text-active-fg">✓ Агент: {agent.name}</span>
-            )}
-            <span className="text-[12px] font-normal text-muted">
-              Танд манай агент туслалцаа үзүүлсэн бол түүний кодыг оруулна уу.
-            </span>
-          </label>
+          {!dealer && (
+            <label className="label mt-1 max-w-[420px]">
+              Агентын код <span className="font-normal text-muted">(заавал биш)</span>
+              <input
+                value={agentCode}
+                onChange={(e) => setAgentCode(agentCodeInput(e.target.value))}
+                autoComplete="off"
+                placeholder="Жишээ: K7M2QX"
+                className="input mono font-normal"
+              />
+              {agent && agent.code === agentCode && (
+                <span className="text-[13px] font-normal text-active-fg">✓ Агент: {agent.name}</span>
+              )}
+              <span className="text-[12px] font-normal text-muted">
+                Танд манай агент туслалцаа үзүүлсэн бол түүний кодыг оруулна уу.
+              </span>
+            </label>
+          )}
         </section>
       </form>
 

@@ -41,7 +41,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         </div>
       </footer>
       <CompareBar />
-      {profile && <MobileTabBar unread={unread} />}
+      {profile && <MobileTabBar unread={unread} admin={profile.role === "admin"} />}
     </>
   );
 }

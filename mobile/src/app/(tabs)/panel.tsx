@@ -27,11 +27,11 @@ type Stats = {
 
 const EMPTY: Stats = { pending: 0, active: 0, soldMonth: 0, soldMonthSum: 0, users: 0, offers: 0, flags: 0 };
 
+// Дилерийн хувилбар: зар шалгалтгүй шууд нийтлэгддэг тул «хүлээгдэж», «татгалзсан» байхгүй
 const FILTERS: { key: AdStatus; label: string }[] = [
-  { key: "pending", label: "Хүлээгдэж буй" },
   { key: "active", label: "Идэвхтэй" },
+  { key: "hidden", label: "Нуусан" },
   { key: "sold", label: "Зарагдсан" },
-  { key: "rejected", label: "Татгалзсан" },
 ];
 
 const head = { count: "exact" as const, head: true };
@@ -47,7 +47,7 @@ function Panel() {
   const { profile } = useAuth();
   const admin = isAdmin(profile);
   const [stats, setStats] = useState<Stats>(EMPTY);
-  const [status, setStatus] = useState<AdStatus>("pending");
+  const [status, setStatus] = useState<AdStatus>("active");
   const [q, setQ] = useState("");
   const [ads, setAds] = useState<StaffAd[]>([]);
   const [loading, setLoading] = useState(true);
@@ -136,7 +136,7 @@ function Panel() {
           <T style={{ fontSize: 13, color: C.muted }}>Админ · {profile?.full_name?.split(" ")[0] ?? ""}</T>
         </View>
         <View style={{ flexDirection: "row", gap: 8 }}>
-          <IconBtn icon="file-text" label="Тайлан" onPress={() => router.push("/panel/reports")} />
+          <IconBtn icon="plus" label="Зар нэмэх" onPress={() => router.push("/post")} />
           {admin && <IconBtn icon="percent" label="Лизинг" onPress={() => router.push("/panel/leasing")} />}
           {!admin && <IconBtn icon="users" label="Хэрэглэгчид" onPress={() => router.push("/panel/users")} />}
           {admin && <IconBtn icon="bell" label="Мэдэгдэл" onPress={() => router.push("/panel/broadcasts")} />}
@@ -145,8 +145,7 @@ function Panel() {
       </View>
 
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-        <Kpi dark label="Хүлээгдэж буй" value={stats.pending} onPress={() => setStatus("pending")} />
-        <Kpi label="Идэвхтэй зар" value={stats.active} onPress={() => setStatus("active")} />
+        <Kpi dark label="Идэвхтэй зар" value={stats.active} onPress={() => setStatus("active")} />
         <Kpi
           label="Зарагдсан (энэ сар)"
           value={stats.soldMonth}
