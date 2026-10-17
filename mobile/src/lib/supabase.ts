@@ -3,9 +3,9 @@ import { AppState, Platform } from "react-native";
 import { createClient } from "@supabase/supabase-js";
 
 // Нээлттэй (publishable) түлхүүр - апп-д оруулахад аюулгүй, хамгаалалт нь RLS дээр.
-export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "__SUPABASE_URL__";
+export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? "https://ggmwuhbjajhiiafhphva.supabase.co";
 const SUPABASE_KEY =
-  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "__SUPABASE_KEY__";
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "sb_publishable_M-LrJC1rWk67sFw6j6NBIA_r7K8co82";
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
