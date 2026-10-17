@@ -18,7 +18,8 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ggmwuhbjajhiiafhphva.supabase.co",
         "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_M-LrJC1rWk67sFw6j6NBIA_r7K8co82"
       },
-      "channel": "preview"
+      "channel": "preview",
+      "credentialsSource": "local"
     },
     "production": {
       "autoIncrement": true,
@@ -26,7 +27,8 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ggmwuhbjajhiiafhphva.supabase.co",
         "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_M-LrJC1rWk67sFw6j6NBIA_r7K8co82"
       },
-      "channel": "production"
+      "channel": "production",
+      "credentialsSource": "local"
     }
   },
   "submit": {
