@@ -2,7 +2,7 @@
   "expo": {
     "name": "Auto car",
     "slug": "auto-car",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -73,12 +73,19 @@
       "typedRoutes": false
     },
     "extra": {
-      "eas": {},
+      "eas": {
+        "projectId": "b72f353d-2c3c-46ea-857e-69ea4236f790"
+      },
       "router": {}
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
-    "owner": "saylos"
+    "owner": "saylos",
+    "updates": {
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/b72f353d-2c3c-46ea-857e-69ea4236f790"
+    }
   }
 }

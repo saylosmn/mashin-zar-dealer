@@ -11,6 +11,9 @@
 Шинэ харилцагчид суулгахдаа: шинэ Supabase project → `supabase/schema.sql`, Vercel дээр шинэ project,
 `mobile/app.json`-д апп-ын нэр, `package`, `slug`, лого, `mobile/src/lib/staff.ts`-ийн `WEB_URL`-ийг солино.
 
+Апп шинэчлэх: код өөрчлөөд main руу push → GitHub Actions `eas update` (EXPO_TOKEN secret хэрэгтэй),
+эсвэл компьютер дээрээ `update-app.bat`. app.json/native сан өөрчлөгдвөл шинэ APK build хийнэ.
+
 Өмнө нь ажиллаж байсан DB-д: `supabase/migrations/20261017090000_dealer_mode.sql`-ийг ажиллуулна.
 
 ---

@@ -1,9 +1,9 @@
-# Апп-ыг автоматаар шинэчлэх:
-#  - mobile/ доторх JS код өөрчлөгдөх бүрт  → EAS Update (суулгасан апп дараа нээгдэхдээ шинэ кодоо татна)
-#  - app.json / package.json / eas.json / assets өөрчлөгдвөл, эсвэл GitHub Release-д APK хараахан байхгүй бол
-#    → EAS Build (APK) → GitHub Release-д "mashin-zar.apk" болж хавсрагдана → сайтын "Апп татах" товч шууд татна
-# Шаардлага: GitHub repo → Settings → Secrets → Actions → EXPO_TOKEN
-name: Mobile (EAS Update / Build)
+# Auto car аппыг автоматаар шинэчлэх (EAS Update):
+#  mobile/ эсвэл shared/ доторх код main руу push хийгдэх бүрт → EAS Update (preview channel).
+#  Суулгасан апп дараагийн нээлтээр шинэ кодоо татна. APK дахин суулгах шаардлагагүй.
+# app.json / package.json / шинэ native сан өөрчлөгдвөл шинэ APK build хэрэгтэй (Documents\auto-car\build2.bat).
+# Шаардлага: GitHub repo → Settings → Secrets and variables → Actions → EXPO_TOKEN
+name: Mobile (EAS Update)
 
 on:
   push:
@@ -13,21 +13,13 @@ on:
       - "shared/**"
       - ".github/workflows/mobile.yml"
   workflow_dispatch:
-    inputs:
-      build:
-        description: "Шинэ APK build хийх үү?"
-        type: boolean
-        default: true
-
-permissions:
-  contents: write
 
 concurrency:
   group: mobile-eas
   cancel-in-progress: false
 
 jobs:
-  eas:
+  update:
     runs-on: ubuntu-latest
     env:
       EAS_NO_VCS: "1"
@@ -36,23 +28,6 @@ jobs:
         working-directory: mobile
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Шийдвэр — build эсвэл update
-        id: decide
-        working-directory: .
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          BUILD=false
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.build }}" = "true" ]; then BUILD=true; fi
-          if ! gh release view --json assets --jq '.assets[].name' 2>/dev/null | grep -qx mashin-zar.apk; then BUILD=true; fi
-          if [ "${{ github.event_name }}" = "push" ] && [ -n "${{ github.event.before }}" ] && [ "${{ github.event.before }}" != "0000000000000000000000000000000000000000" ]; then
-            if git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -qE '^mobile/(app\.json|package\.json|eas\.json|google-services\.json|assets/)'; then BUILD=true; fi
-          fi
-          echo "build=$BUILD" >> "$GITHUB_OUTPUT"
-          echo "Build хийх: $BUILD"
 
       - name: EXPO_TOKEN шалгах
         env:
@@ -77,69 +52,5 @@ jobs:
       - name: Сангууд суулгах
         run: npm ci || npm install
 
-      - name: EAS project холбох
-        run: |
-          eas init --non-interactive --force
-          eas update:configure --platform android --non-interactive || true
-
-      - name: EAS Update (код шинэчлэл)
-        if: steps.decide.outputs.build != 'true'
+      - name: EAS Update
         run: eas update --channel preview --platform android --non-interactive --message "$(git log -1 --pretty=%s)"
-
-      - name: Хувилбарын дугаар ахиулах, Firebase тохиргоо
-        if: steps.decide.outputs.build == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          LAST=$(gh release view --json name --jq .name 2>/dev/null | grep -oE '[0-9]+(\.[0-9]+)*' | tail -1 || true)
-          node -e '
-            const fs = require("fs");
-            const j = JSON.parse(fs.readFileSync("app.json", "utf8"));
-            const norm = (v) => String(v || "0").split(".").map(Number).concat([0, 0, 0]).slice(0, 3);
-            const c = norm(j.expo.version), l = norm(process.argv[1]);
-            const cmp = c[0] - l[0] || c[1] - l[1] || c[2] - l[2];
-            if (cmp <= 0) { l[2]++; j.expo.version = l.join("."); }
-            // Push мэдэгдэл (FCM) — mobile/google-services.json байвал холбоно
-            if (fs.existsSync("google-services.json")) j.expo.android.googleServicesFile = "./google-services.json";
-            fs.writeFileSync("app.json", JSON.stringify(j, null, 2) + "\n");
-            console.log("Шинэ хувилбар:", j.expo.version, "| FCM:", !!j.expo.android.googleServicesFile);
-          ' "$LAST"
-
-      - name: EAS Build (APK)
-        if: steps.decide.outputs.build == 'true'
-        run: |
-          eas build -p android --profile preview --non-interactive --wait --json > build.json
-          URL=$(node -e "const b=require('./build.json');console.log((Array.isArray(b)?b[0]:b).artifacts.buildUrl)")
-          echo "APK: $URL"
-          curl -fL --retry 3 -o mashin-zar.apk "$URL"
-          ls -lh mashin-zar.apk
-          # Дараагийн update-ууд энэ build-тэй таарахын тулд нэг удаа EAS Update бас илгээнэ
-          eas update --channel preview --platform android --non-interactive --message "APK build" || true
-
-      - name: GitHub Release-д APK байрлуулах
-        if: steps.decide.outputs.build == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          VERSION=$(node -p "require('./app.json').expo.version")
-          TAG="apk-v$VERSION-${{ github.run_number }}"
-          gh release create "$TAG" mashin-zar.apk \
-            --target "${{ github.sha }}" \
-            --title "Autoshop.mn v$VERSION" \
-            --notes "Android апп (APK). Сайтын \"Апп татах\" товчоор татагдана." \
-            --latest
-
-      - name: Шинэ хувилбарын дугаарыг repo-д хадгалах
-        if: steps.decide.outputs.build == 'true'
-        working-directory: .
-        run: |
-          git config user.name "saylosmn"
-          git config user.email "saylosmn@users.noreply.github.com"
-          git add mobile/app.json
-          git commit -m "Апп v$(node -p "require('./mobile/app.json').expo.version") (APK build) [skip ci]" || exit 0
-          for i in 1 2 3; do
-            if git pull --rebase --autostash origin main && git push origin HEAD:main; then exit 0; fi
-            sleep 5
-          done
-          echo "::error::app.json-ийн шинэ хувилбарыг repo руу push хийж чадсангүй"
-          exit 1
