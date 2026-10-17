@@ -4,7 +4,7 @@ import { supabase } from "./supabase";
 import { errMsg } from "./format";
 import type { Ad, Profile } from "@shared/types";
 
-export const WEB_URL = "https://web-mu-fawn-45.vercel.app";
+export const WEB_URL = "https://auto-car-web-kappa.vercel.app";
 
 export type Owner = { full_name: string | null; email: string | null; phone: string | null; city: string | null };
 export type StaffAd = Ad & { owner: Owner | null };

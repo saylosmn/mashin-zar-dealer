@@ -6,7 +6,7 @@ export function siteUrl(): string {
   const env =
     process.env.NEXT_PUBLIC_SITE_URL ||
     (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "");
-  return (env || "https://web-mu-fawn-45.vercel.app").replace(/\/+$/, "");
+  return (env || "https://auto-car-web-kappa.vercel.app").replace(/\/+$/, "");
 }
 
 export const SITE_NAME = "Autoshop.mn";
