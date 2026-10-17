@@ -1,0 +1,117 @@
+import { useEffect } from "react";
+import { View } from "react-native";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import {
+  useFonts,
+  Onest_400Regular,
+  Onest_500Medium,
+  Onest_600SemiBold,
+  Onest_700Bold,
+} from "@expo-google-fonts/onest";
+import { Unbounded_700Bold } from "@expo-google-fonts/unbounded";
+import { JetBrainsMono_500Medium, JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono";
+import { AuthProvider, useAuth } from "@/lib/auth";
+import { OfflineBanner } from "@/components/OfflineBanner";
+import { UpdateBanner } from "@/components/UpdateBanner";
+import { AppVersionBanner } from "@/components/AppVersionBanner";
+import { usePushRouting } from "@/lib/push";
+import { setLiveIdentity } from "@/lib/live";
+import { C } from "@/lib/theme";
+import Splash from "@/components/Splash";
+import Blocked from "@/components/Blocked";
+import { installErrorLogging, logAppError } from "@/lib/log-error";
+import { Button, StateView } from "@/components/ui";
+import type { ErrorBoundaryProps } from "expo-router";
+
+SplashScreen.preventAutoHideAsync().catch(() => {});
+installErrorLogging();
+
+/** Дэлгэц унасан үед: алдааг бүртгээд дахин оролдох товч харуулна */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  useEffect(() => {
+    logAppError(error, "screen");
+  }, [error]);
+  return (
+    <StateView icon="warning" title="Алдаа гарлаа" text="Түр зуурын саатал гарлаа. Дахин оролдоно уу.">
+      <Button title="Дахин оролдох" icon="refresh-cw" onPress={retry} />
+    </StateView>
+  );
+}
+
+function RootStack() {
+  const { ready, session, profile } = useAuth();
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync().catch(() => {});
+  }, [ready]);
+  usePushRouting(!!session && ready);
+  useEffect(() => {
+    if (ready) setLiveIdentity(session?.user.id, profile?.role, profile?.partner_id);
+  }, [ready, session?.user.id, profile?.role, profile?.partner_id]);
+  if (!ready) return <Splash />;
+  if (session && profile?.is_blocked) return <Blocked />;
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: C.paper },
+        animation: "fade_from_bottom",
+        animationDuration: 180,
+      }}
+    >
+      {/* Нэвтрэлгүйгээр зар үзнэ; бусад дэлгэц нэвтэрсэн хэрэглэгчид */}
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="ads/[id]" />
+      <Stack.Screen name="compare" />
+      <Stack.Screen name="login" options={{ animation: "slide_from_bottom" }} />
+      <Stack.Protected guard={!!session}>
+        <Stack.Screen name="post" />
+        <Stack.Screen name="complete-profile" />
+        <Stack.Screen name="success" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="panel/ad/[id]" />
+        <Stack.Screen name="panel/users" />
+        <Stack.Screen name="panel/settings" />
+        <Stack.Screen name="panel/broadcasts" />
+        <Stack.Screen name="panel/reports" />
+        <Stack.Screen name="edit/[id]" />
+        <Stack.Screen name="loans" />
+        <Stack.Screen name="loan/[id]" />
+        <Stack.Screen name="panel/leasing" />
+        <Stack.Screen name="panel/flags" />
+        <Stack.Screen name="agent" />
+        <Stack.Screen name="chat/[id]" />
+        <Stack.Screen name="pay/[id]" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  const [loaded] = useFonts({
+    Onest_400Regular,
+    Onest_500Medium,
+    Onest_600SemiBold,
+    Onest_700Bold,
+    Unbounded_700Bold,
+    JetBrainsMono_500Medium,
+    JetBrainsMono_700Bold,
+  });
+  if (!loaded) return <View style={{ flex: 1, backgroundColor: C.ink }} />;
+  return (
+    <SafeAreaProvider>
+      <AuthProvider>
+        <StatusBar style="dark" />
+        <SafeAreaView edges={["top"]} style={{ backgroundColor: C.paper }}>
+          <OfflineBanner />
+          <UpdateBanner />
+          <AppVersionBanner />
+        </SafeAreaView>
+        <View style={{ flex: 1 }}>
+          <RootStack />
+        </View>
+      </AuthProvider>
+    </SafeAreaProvider>
+  );
+}

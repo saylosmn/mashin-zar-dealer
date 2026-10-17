@@ -1,0 +1,92 @@
+import { NextResponse } from "next/server";
+import { timingSafeEqual } from "node:crypto";
+import webpush from "web-push";
+import { VAPID_PUBLIC_KEY } from "@/lib/webpush-key";
+
+/**
+ * Өгөгдлийн сангийн trigger (pg_net) мэдэгдэл бүрийг энд илгээнэ -> вэб push (iPhone, Android Chrome, компьютер).
+ * Хүсэлт өөрөө хүлээн авагчийн захиалгыг (subscription) агуулдаг тул зөвхөн тэр хүмүүст л очно.
+ */
+type Msg = {
+  sub: { endpoint: string; keys: { p256dh: string; auth: string } };
+  title: string;
+  body?: string;
+  url?: string;
+  tag?: string;
+};
+
+export const maxDuration = 30;
+
+/** Зөвхөн өгөгдлийн сан (notify_push) нууц түлхүүрээр дуудна - бусад хүн push илгээж чадахгүй */
+function authorized(request: Request) {
+  const secret = process.env.PUSH_SECRET;
+  const got = request.headers.get("x-push-secret") ?? "";
+  if (!secret || got.length !== secret.length) return false;
+  return timingSafeEqual(Buffer.from(got), Buffer.from(secret));
+}
+
+/** Зөвхөн сайтын доторх зам ("/ads/..."); гадны холбоос руу чиглүүлэхгүй */
+const safeUrl = (u: unknown) =>
+  typeof u === "string" && u.startsWith("/") && !u.startsWith("//") && !u.startsWith("/\\")
+    ? u.slice(0, 300)
+    : "/notifications";
+
+export async function POST(request: Request) {
+  if (!authorized(request)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const priv = process.env.VAPID_PRIVATE_KEY;
+  if (!priv) return NextResponse.json({ error: "VAPID_PRIVATE_KEY тохируулаагүй" }, { status: 503 });
+  webpush.setVapidDetails("https://web-mu-fawn-45.vercel.app", VAPID_PUBLIC_KEY, priv);
+
+  let messages: Msg[] = [];
+  try {
+    const j = await request.json();
+    messages = Array.isArray(j?.messages) ? j.messages.slice(0, 500) : [];
+  } catch {
+    return NextResponse.json({ error: "bad json" }, { status: 400 });
+  }
+
+  const gone: string[] = [];
+  let sent = 0;
+  await Promise.all(
+    messages
+      .filter(
+        (m) =>
+          typeof m?.sub?.endpoint === "string" &&
+          m.sub.endpoint.startsWith("https://") &&
+          m.sub.keys?.p256dh &&
+          m.sub.keys?.auth,
+      )
+      .map(async (m) => {
+        try {
+          await webpush.sendNotification(
+            m.sub,
+            JSON.stringify({
+              title: String(m.title ?? "Autoshop.mn").slice(0, 120),
+              body: String(m.body ?? "").slice(0, 300),
+              url: safeUrl(m.url),
+              tag: typeof m.tag === "string" ? m.tag.slice(0, 80) : undefined,
+            }),
+            { TTL: 60 * 60 * 24, urgency: "high" },
+          );
+          sent++;
+        } catch (e) {
+          const code = (e as { statusCode?: number }).statusCode;
+          if (code === 404 || code === 410) gone.push(m.sub.endpoint);
+        }
+      }),
+  );
+
+  // Хүчингүй болсон захиалгуудыг цэвэрлэнэ
+  if (gone.length) {
+    await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/prune_web_push`, {
+      method: "POST",
+      headers: {
+        apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ p_endpoints: gone, p_secret: process.env.PUSH_SECRET }),
+    }).catch(() => {});
+  }
+  return NextResponse.json({ sent, gone: gone.length });
+}
