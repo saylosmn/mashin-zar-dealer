@@ -1,0 +1,16 @@
+# Auto car: main руу push хийх бүрт Expo Update (preview channel) илгээнэ.
+# Суулгасан апп (v1.0.1+) дараагийн нээлтээр шинэ кодоо татна. Токен шаардлагагүй:
+# expo.dev → auto-car → Settings → GitHub дээр энэ repo холбогдсон, Base directory = mobile.
+name: Update on push
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update:
+    name: EAS Update
+    type: update
+    params:
+      channel: preview
+      platform: android
