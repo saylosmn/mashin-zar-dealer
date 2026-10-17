@@ -97,7 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const signInWithGoogle = useCallback(async () => {
-    const redirectTo = makeRedirectUri({ scheme: "mashinzar", path: "auth/callback" });
+    const redirectTo = makeRedirectUri({ scheme: "autocar", path: "auth/callback" });
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo, skipBrowserRedirect: Platform.OS !== "web" },

@@ -1,17 +1,17 @@
 {
   "expo": {
-    "name": "Autoshop.mn",
-    "slug": "mashin-zar",
-    "version": "1.0.2",
+    "name": "Auto car",
+    "slug": "auto-car",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "mn.mashinzar.app"
+      "bundleIdentifier": "mn.autocar.app"
     },
     "android": {
-      "package": "mn.mashinzar.app",
+      "package": "mn.autocar.app",
       "adaptiveIcon": {
         "backgroundColor": "#111317",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -21,11 +21,8 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.POST_NOTIFICATIONS",
         "android.permission.RECORD_AUDIO"
-      ],
-      "googleServicesFile": "./google-services.json"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -62,29 +59,25 @@
         "expo-build-properties",
         {
           "android": {
-            "buildArchs": ["arm64-v8a", "armeabi-v7a"]
+            "buildArchs": [
+              "arm64-v8a",
+              "armeabi-v7a"
+            ]
           }
         }
       ]
     ],
-    "scheme": "mashinzar",
+    "scheme": "autocar",
     "backgroundColor": "#F3F4F1",
     "experiments": {
       "typedRoutes": false
     },
     "extra": {
-      "eas": {
-        "projectId": "c29a9795-5b0e-49c6-ad58-b18f9c07d55a"
-      },
+      "eas": {},
       "router": {}
     },
     "runtimeVersion": {
       "policy": "appVersion"
-    },
-    "updates": {
-      "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/c29a9795-5b0e-49c6-ad58-b18f9c07d55a"
     },
     "owner": "saylos"
   }
