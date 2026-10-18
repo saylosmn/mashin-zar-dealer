@@ -2,7 +2,7 @@
   "expo": {
     "name": "Auto car",
     "slug": "auto-car",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,8 @@
       "predictiveBackGestureEnabled": false,
       "permissions": [
         "android.permission.POST_NOTIFICATIONS",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.REQUEST_INSTALL_PACKAGES"
       ],
       "googleServicesFile": "./google-services.json"
     },
@@ -60,10 +61,7 @@
         "expo-build-properties",
         {
           "android": {
-            "buildArchs": [
-              "arm64-v8a",
-              "armeabi-v7a"
-            ]
+            "buildArchs": ["arm64-v8a", "armeabi-v7a"]
           }
         }
       ]
