@@ -12,7 +12,7 @@
 `mobile/app.json`-д апп-ын нэр, `package`, `slug`, лого, `mobile/src/lib/staff.ts`-ийн `WEB_URL`-ийг солино.
 
 Апп шинэчлэх: код өөрчлөөд main руу push → EAS Workflows (`mobile/.eas/workflows/update.yml`) `eas update`
-хийнэ (expo.dev дээр GitHub холболт, Base directory = mobile), эсвэл компьютер дээрээ `update-app.bat`. app.json/native сан өөрчлөгдвөл шинэ APK build хийнэ.
+хийнэ (expo.dev → auto-car → GitHub: saylosmn/mashin-zar-dealer, Base directory = /mobile — холбогдсон), эсвэл компьютер дээрээ `update-app.bat`. app.json/native сан өөрчлөгдвөл шинэ APK build хийнэ.
 
 Өмнө нь ажиллаж байсан DB-д: `supabase/migrations/20261017090000_dealer_mode.sql`-ийг ажиллуулна.
 
