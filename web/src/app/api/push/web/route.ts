@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import { timingSafeEqual } from "node:crypto";
 import webpush from "web-push";
-import { VAPID_PUBLIC_KEY } from "@/lib/webpush-key";
 
 /**
  * Өгөгдлийн сангийн trigger (pg_net) мэдэгдэл бүрийг энд илгээнэ -> вэб push (iPhone, Android Chrome, компьютер).
@@ -17,12 +15,35 @@ type Msg = {
 
 export const maxDuration = 30;
 
-/** Зөвхөн өгөгдлийн сан (notify_push) нууц түлхүүрээр дуудна - бусад хүн push илгээж чадахгүй */
-function authorized(request: Request) {
-  const secret = process.env.PUSH_SECRET;
-  const got = request.headers.get("x-push-secret") ?? "";
-  if (!secret || got.length !== secret.length) return false;
-  return timingSafeEqual(Buffer.from(got), Buffer.from(secret));
+/** Supabase RPC (нийтийн түлхүүрээр). Эрхийг функц өөрөө push secret-ээр шалгана. */
+async function rpc<T>(name: string, args: Record<string, unknown>): Promise<T | null> {
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/${name}`, {
+    method: "POST",
+    headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+    body: JSON.stringify(args),
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  return (await res.json()) as T;
+}
+
+/**
+ * Зөвхөн өгөгдлийн сан (notify_push) дуудна: x-push-secret-ийг DB өөрөө шалгана.
+ * Secret нь зөвхөн Vault-д байдаг тул сайтад ямар ч нууц түлхүүр тохируулах шаардлагагүй.
+ */
+async function authorized(secret: string) {
+  return secret.length >= 32 && (await rpc<boolean>("push_secret_ok", { p: secret })) === true;
+}
+
+type Keys = { public: string; private: string };
+
+/** VAPID түлхүүр: DB-д байхгүй бол нэг удаа үүсгээд хадгална (анхны хүсэлт = webpush_bootstrap) */
+async function vapidKeys(secret: string): Promise<Keys | null> {
+  const have = await rpc<Keys | null>("webpush_keys", { p_secret: secret });
+  if (have?.public && have.private) return have;
+  const gen = webpush.generateVAPIDKeys();
+  return rpc<Keys>("webpush_keys_init", { p_secret: secret, p_public: gen.publicKey, p_private: gen.privateKey });
 }
 
 /** Зөвхөн сайтын доторх зам ("/ads/..."); гадны холбоос руу чиглүүлэхгүй */
@@ -32,10 +53,11 @@ const safeUrl = (u: unknown) =>
     : "/notifications";
 
 export async function POST(request: Request) {
-  if (!authorized(request)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-  const priv = process.env.VAPID_PRIVATE_KEY;
-  if (!priv) return NextResponse.json({ error: "VAPID_PRIVATE_KEY тохируулаагүй" }, { status: 503 });
-  webpush.setVapidDetails("https://auto-car-web-kappa.vercel.app", VAPID_PUBLIC_KEY, priv);
+  const secret = request.headers.get("x-push-secret") ?? "";
+  if (!(await authorized(secret))) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const keys = await vapidKeys(secret);
+  if (!keys) return NextResponse.json({ error: "VAPID түлхүүр алга" }, { status: 503 });
+  webpush.setVapidDetails("https://auto-car-web-kappa.vercel.app", keys.public, keys.private);
 
   let messages: Msg[] = [];
   try {
@@ -77,16 +99,6 @@ export async function POST(request: Request) {
   );
 
   // Хүчингүй болсон захиалгуудыг цэвэрлэнэ
-  if (gone.length) {
-    await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/prune_web_push`, {
-      method: "POST",
-      headers: {
-        apikey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ p_endpoints: gone, p_secret: process.env.PUSH_SECRET }),
-    }).catch(() => {});
-  }
+  if (gone.length) await rpc("prune_web_push", { p_endpoints: gone, p_secret: secret }).catch(() => null);
   return NextResponse.json({ sent, gone: gone.length });
 }

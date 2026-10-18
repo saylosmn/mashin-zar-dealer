@@ -2,8 +2,6 @@
 
 import { createClient } from "./supabase/client";
 
-import { VAPID_PUBLIC_KEY } from "./webpush-key";
-
 export type PushState = "unsupported" | "ios-install" | "denied" | "off" | "on";
 
 export const isIOS = () =>
@@ -46,11 +44,15 @@ export async function enablePush(): Promise<PushState> {
   if (perm !== "granted") return perm === "denied" ? "denied" : "off";
   const reg = (await registerSW()) ?? (await navigator.serviceWorker.ready);
   await navigator.serviceWorker.ready;
-  let sub = await reg.pushManager.getSubscription();
-  if (!sub)
-    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(VAPID_PUBLIC_KEY) });
-  const j = sub.toJSON();
   const supabase = createClient();
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    // Нийтийн VAPID түлхүүрийг сервер анх үүсгээд DB-д хадгалсан
+    const { data: key } = await supabase.rpc("webpush_public_key");
+    if (typeof key !== "string" || !key) throw new Error("Вэб мэдэгдэл хараахан тохируулагдаагүй байна");
+    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: keyBytes(key) });
+  }
+  const j = sub.toJSON();
   const { error } = await supabase.rpc("save_web_push", {
     p_endpoint: j.endpoint,
     p_p256dh: j.keys?.p256dh,

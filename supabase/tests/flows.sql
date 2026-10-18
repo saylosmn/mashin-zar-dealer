@@ -200,4 +200,13 @@ select pg_temp.fails($$insert into storage.objects(bucket_id, name) values ('ad-
 select pg_temp.fails($$insert into storage.objects(bucket_id, name) values ('ad-photos', '00000000-0000-0000-0000-00000000000a/x.jpg')$$, 'бусдын хавтаст зураг оруулахгүй');
 reset role;
 
+-- 12. Вэб push: secret-гүй хүн түлхүүр авч, үүсгэж чадахгүй
+set role anon;
+select pg_temp.eq(public.push_secret_ok('x'), false, 'буруу push secret');
+select pg_temp.fails($$select public.webpush_keys('x')$$, 'secret-гүй VAPID түлхүүр авахгүй');
+select pg_temp.fails($$select public.webpush_keys_init('x', 'a', 'b')$$, 'secret-гүй VAPID үүсгэхгүй');
+select pg_temp.fails($$select count(*) from public.webpush_config$$, 'VAPID хүснэгт нийтэд харагдахгүй');
+select pg_temp.eq(public.webpush_public_key() is null, true, 'нийтийн түлхүүр хараахан алга');
+reset role;
+
 \echo 'Бүх SQL тест амжилттай'
