@@ -36,7 +36,7 @@ export function adBackend(uid: string, photoUris: string[]): AdBackend {
         p_vin: d.vin,
         p_price: d.price,
         p_signature: signature,
-        p_ua: `Autoshop.mn апп (${Platform.OS})`,
+        p_ua: `Auto car апп (${Platform.OS})`,
       });
       if (error) throw error;
       return data as string;

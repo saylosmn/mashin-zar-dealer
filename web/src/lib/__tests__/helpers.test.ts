@@ -59,13 +59,13 @@ describe("siteUrl", () => {
   it("тохиргоогүй бол Vercel-ийн хаяг", () => {
     vi.stubEnv("NEXT_PUBLIC_SITE_URL", "");
     vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "");
-    expect(siteUrl()).toBe("https://web-mu-fawn-45.vercel.app");
+    expect(siteUrl()).toBe("https://auto-car-web-kappa.vercel.app");
   });
 });
 
 describe("гэрээ", () => {
   it("termsFrom — SQL ажиллаагүй үед анхны нөхцөл", () => {
-    expect(termsFrom({})).toEqual({ company: "Autoshop ХХК", terms: DEFAULT_TERMS });
+    expect(termsFrom({})).toEqual({ company: "Auto car", terms: DEFAULT_TERMS });
     expect(termsFrom({ commission_after: "2.5", commission_tiers: [{ days: 3, percent: 4 }] }).terms).toEqual({
       tiers: [{ days: 3, percent: 4 }],
       after: 2.5,

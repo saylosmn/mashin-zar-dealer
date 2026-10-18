@@ -47,7 +47,7 @@ export async function renderContractPdf(c: ContractData, signatureSvg?: string |
   const bold = await doc.embedFont(f.bold, { subset: true });
   doc.setTitle(`${CONTRACT_TITLE}${c.number ? ` №${c.number}` : ""}`);
   doc.setAuthor(c.company);
-  doc.setCreator("Autoshop.mn");
+  doc.setCreator("Auto car");
 
   const width = A4[0] - M * 2;
   let page: PDFPage = doc.addPage(A4);

@@ -8,14 +8,14 @@ import { SITE_NAME, siteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
-  title: { default: "Autoshop.mn — автомашины зар", template: "%s — Autoshop.mn" },
+  title: { default: "Auto car — автомашин худалдаа", template: "%s — Auto car" },
   description:
     "Шалгагдсан автомашины зарууд Монголд. Toyota Prius, Land Cruiser зэрэг машин зарах, худалдан авах, лизингийн тооцоолуур, шинэ зарын мэдэгдэл.",
   keywords: ["машин зар", "автомашин худалдаа", "машин зарна", "машин авна", "Prius зар", "лизинг", "Улаанбаатар"],
   openGraph: { type: "website", siteName: SITE_NAME, locale: "mn_MN", url: "/" },
   twitter: { card: "summary_large_image" },
-  applicationName: "Autoshop.mn",
-  appleWebApp: { capable: true, title: "Autoshop", statusBarStyle: "black" },
+  applicationName: "Auto car",
+  appleWebApp: { capable: true, title: "Auto car", statusBarStyle: "black" },
   formatDetection: { telephone: false },
 };
 

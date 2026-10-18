@@ -4,7 +4,7 @@ import { T } from "./ui";
 
 const MARK = require("../../assets/logo-mark.png");
 
-/** Autoshop.mn тэмдэг: «A» үсэг = алс руу одох зам */
+/** Auto car тэмдэг: «A» үсэг = алс руу одох зам */
 export function LogoMark({ size = 32 }: { size?: number }) {
   return (
     <Image
@@ -15,13 +15,13 @@ export function LogoMark({ size = 32 }: { size?: number }) {
   );
 }
 
-/** «Autoshop» + шар «.mn» */
+/** «Auto» + шар «car» */
 export function Wordmark({ size = 15, color = C.ink }: { size?: number; color?: string }) {
   return (
-    <T w="display" style={{ fontSize: size, color }} accessibilityLabel="Autoshop.mn">
-      Autoshop
+    <T w="display" style={{ fontSize: size, color }} accessibilityLabel="Auto car">
+      {"Auto "}
       <T w="display" style={{ fontSize: size, color: C.yellow }}>
-        .mn
+        car
       </T>
     </T>
   );

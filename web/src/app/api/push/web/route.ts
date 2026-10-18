@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   if (!authorized(request)) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const priv = process.env.VAPID_PRIVATE_KEY;
   if (!priv) return NextResponse.json({ error: "VAPID_PRIVATE_KEY тохируулаагүй" }, { status: 503 });
-  webpush.setVapidDetails("https://web-mu-fawn-45.vercel.app", VAPID_PUBLIC_KEY, priv);
+  webpush.setVapidDetails("https://auto-car-web-kappa.vercel.app", VAPID_PUBLIC_KEY, priv);
 
   let messages: Msg[] = [];
   try {
@@ -61,7 +61,7 @@ export async function POST(request: Request) {
           await webpush.sendNotification(
             m.sub,
             JSON.stringify({
-              title: String(m.title ?? "Autoshop.mn").slice(0, 120),
+              title: String(m.title ?? "Auto car").slice(0, 120),
               body: String(m.body ?? "").slice(0, 300),
               url: safeUrl(m.url),
               tag: typeof m.tag === "string" ? m.tag.slice(0, 80) : undefined,

@@ -6,7 +6,7 @@ import { Logo, LogoMark } from "@/components/Logo";
 import { LiveSync } from "@/components/LiveSync";
 import { apkInfo } from "@/lib/release";
 
-export const metadata: Metadata = { title: "Апп татах", description: "Autoshop.mn Android апп татах" };
+export const metadata: Metadata = { title: "Апп татах", description: "Auto car Android апп татах" };
 
 export default async function AppDownload() {
   const h = await headers();
@@ -36,7 +36,7 @@ export default async function AppDownload() {
       <main className="mx-auto flex w-full max-w-[960px] flex-1 flex-wrap items-center justify-center gap-x-16 gap-y-10 px-6 pb-16">
         <div className="flex max-w-[460px] flex-[1_1_360px] flex-col items-start gap-6">
           <LogoMark size={80} className="rounded-[22px] ring-1 ring-ink-line" />
-          <h1 className="h-display m-0 text-[clamp(30px,5vw,48px)] leading-[1.1]">Autoshop.mn апп</h1>
+          <h1 className="h-display m-0 text-[clamp(30px,5vw,48px)] leading-[1.1]">Auto car апп</h1>
 
           {isIOS ? (
             <IosSteps />
@@ -127,7 +127,7 @@ function IosSteps() {
     [
       "4",
       <>
-        Нүүр дэлгэц дээрх <strong className="text-paper">Autoshop.mn</strong>-ээ нээж нэвтэрнэ →{" "}
+        Нүүр дэлгэц дээрх <strong className="text-paper">Auto car</strong>-ээ нээж нэвтэрнэ →{" "}
         <strong className="text-paper">“Мэдэгдэл асаах”</strong>
       </>,
     ],

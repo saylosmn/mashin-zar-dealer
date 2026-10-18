@@ -3,7 +3,7 @@ import { apkDownloadUrl } from "@/lib/release";
 
 export const dynamic = "force-dynamic";
 
-/** Нэг товшилтоор APK татах: сайтын /auto-car.apk (эсвэл APK_URL) руу шууд. */
+/** Нэг товшилтоор APK татах: GitHub Release-ийн auto-car.apk файл руу шууд. */
 export async function GET(request: Request) {
   // iPhone дээр APK ажиллахгүй -> суулгах заавар руу
   if (/iPhone|iPad|iPod/i.test(request.headers.get("user-agent") ?? ""))

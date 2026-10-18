@@ -67,7 +67,7 @@ export function contractSections(c: ContractData): Section[] {
     {
       heading: "1. Гэрээний зүйл",
       lines: [
-        "1.1. Эзэмшигч өөрийн өмчлөлийн доор дурдсан автомашиныг Зуучлагчаар дамжуулан борлуулах, Зуучлагч уг машины зарыг «Autoshop.mn» платформд (вэб сайт, гар утасны апп) байршуулж, худалдан авагч хайх, холбох үйлчилгээ үзүүлнэ.",
+        "1.1. Эзэмшигч өөрийн өмчлөлийн доор дурдсан автомашиныг Зуучлагчаар дамжуулан борлуулах, Зуучлагч уг машины зарыг «Auto car» платформд (вэб сайт, гар утасны апп) байршуулж, худалдан авагч хайх, холбох үйлчилгээ үзүүлнэ.",
       ],
     },
     {
@@ -127,7 +127,7 @@ export function termsFrom(s: {
   commission_after?: number | string | null;
 }) {
   return {
-    company: s.company_name || "Autoshop ХХК",
+    company: s.company_name || "Auto car",
     terms: {
       tiers: s.commission_tiers?.length
         ? s.commission_tiers.map((t) => ({ days: Number(t.days), percent: Number(t.percent) }))

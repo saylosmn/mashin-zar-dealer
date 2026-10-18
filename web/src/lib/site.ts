@@ -9,7 +9,7 @@ export function siteUrl(): string {
   return (env || "https://auto-car-web-kappa.vercel.app").replace(/\/+$/, "");
 }
 
-export const SITE_NAME = "Autoshop.mn";
+export const SITE_NAME = "Auto car";
 
 /** Агентын урилгын холбоос (нүүр хуудас ?ref=КОД -> зар оруулахад код автоматаар бөглөгдөнө) */
 export const agentLink = (code: string) => `${siteUrl()}/?ref=${encodeURIComponent(code)}`;

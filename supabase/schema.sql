@@ -1,5 +1,5 @@
 -- =====================================================================
--- Autoshop.mn: Supabase schema (вэб, апп нэг өгөгдлийн сан)
+-- Auto car (Autoshop.mn-ээс): Supabase schema (вэб, апп нэг өгөгдлийн сан)
 -- Шинэ project-д SQL Editor-оор бүтнээр нь ажиллуулна. Ажиллаж буй DB-д migrations/ хангалттай.
 -- Дахин ажиллуулахад аюулгүй (idempotent) байхаар бичсэн.
 -- =====================================================================
@@ -4561,3 +4561,8 @@ begin
   end if;
   return new;
 end $$;
+
+-- ========== Auto car нэр (migrations/20261018080000_auto_car_brand.sql) ==========
+-- Auto car: гэрээ, нөхцөлд харагдах компанийн нэр
+alter table public.settings alter column company_name set default 'Auto car';
+update public.settings set company_name = 'Auto car' where company_name = 'Autoshop ХХК';

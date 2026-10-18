@@ -115,7 +115,7 @@ export default async function LeasingPanel({
           <span className="text-[14px] text-muted">
             {allMode
               ? "Бүх лизингийн компанид очсон хүсэлт, тэдний шийдвэр, баримт хэн хэзээ нээсэн"
-              : "Autoshop.mn-ийн худалдан авагчдын лизингийн хүсэлтүүд"}
+              : "Auto car-ын худалдан авагчдын лизингийн хүсэлтүүд"}
           </span>
         </div>
         {isAdmin && (

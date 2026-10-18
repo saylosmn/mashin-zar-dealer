@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-/** Autoshop.mn тэмдэг: «A» үсэг = алс руу одох зам (шар хөвөө, цагаан тасархай шугам). */
+/** Auto car тэмдэг: «A» үсэг = алс руу одох зам (шар хөвөө, цагаан тасархай шугам). */
 export function LogoMark({ size = 32, className }: { size?: number; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden className={className}>
@@ -20,11 +20,11 @@ export function LogoMark({ size = 32, className }: { size?: number; className?: 
   );
 }
 
-/** «Autoshop» + шар «.mn» */
+/** «Auto» + шар «car» */
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
     <span className={`h-display ${className}`}>
-      Autoshop<span className="text-yellow">.mn</span>
+      Auto <span className="text-yellow">car</span>
     </span>
   );
 }
@@ -33,7 +33,7 @@ export function Logo({ dark = true, sub, href = "/" }: { dark?: boolean; sub?: s
   return (
     <Link
       href={href}
-      aria-label="Autoshop.mn — нүүр хуудас"
+      aria-label="Auto car — нүүр хуудас"
       className={`flex items-center gap-2.5 no-underline ${dark ? "text-paper" : "text-ink"}`}
     >
       <LogoMark size={34} className={`shrink-0 rounded-[9px] ${dark ? "ring-1 ring-ink-line" : ""}`} />

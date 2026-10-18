@@ -29,7 +29,7 @@ export async function GET() {
       ],
       after: Number(s?.commission_after ?? 1.5),
     };
-    cache = { key, pdf: await renderContractPdf({ company: s?.company_name ?? "Autoshop ХХК", terms }) };
+    cache = { key, pdf: await renderContractPdf({ company: s?.company_name ?? "Auto car", terms }) };
   }
   return new Response(Buffer.from(cache.pdf), {
     headers: {

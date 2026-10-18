@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Autoshop.mn",
-    short_name: "Autoshop",
+    name: "Auto car",
+    short_name: "Auto car",
     description: "Шалгагдсан автомашины зарууд",
     id: "/",
     start_url: "/",

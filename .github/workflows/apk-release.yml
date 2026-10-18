@@ -1,0 +1,32 @@
+# APK-г GitHub Release-д тавина → вэб сайтын "Апп татах" автоматаар хамгийн сүүлийнхийг татуулна.
+# release/apk-url.txt-д Expo build-ийн APK холбоос бичээд push хийхэд ажиллана (токен шаардлагагүй).
+name: APK → GitHub Release
+
+on:
+  push:
+    branches: [main]
+    paths: ["release/apk-url.txt"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: APK татаж Release үүсгэх
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          URL=$(head -n1 release/apk-url.txt | tr -d '\r ')
+          VER=$(node -p "require('./mobile/app.json').expo.version")
+          curl -fL --retry 3 -o auto-car.apk "$URL"
+          ls -lh auto-car.apk
+          TAG="apk-v$VER-${{ github.run_number }}"
+          gh release create "$TAG" auto-car.apk \
+            --target "${{ github.sha }}" \
+            --title "Auto car v$VER" \
+            --notes "Android апп (APK). Вэб сайтын \"Апп татах\" товчоор татагдана." \
+            --latest
