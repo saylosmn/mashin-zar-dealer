@@ -76,8 +76,6 @@ export function EditAdForm({ ad, userId, maxPhotos }: { ad: Ad; userId: string; 
           trim: str("trim"),
           year_made: Number(str("year_made")) || ad.year_made,
           year_imported: str("year_imported"),
-          plate_number: str("plate_number"),
-          vin: str("vin"),
           phone: str("phone").replace(/[^\d+]/g, ""),
           options,
           modifications: str("modifications"),
@@ -180,14 +178,6 @@ export function EditAdForm({ ad, userId, maxPhotos }: { ad: Ad; userId: string; 
           <input name="year_imported" type="number" defaultValue={ad.year_imported ?? ""} className="input mono" />
         </label>
         <label className="label flex-[1_1_160px]">
-          Улсын дугаар
-          <input name="plate_number" required defaultValue={ad.plate_number} className="input mono" />
-        </label>
-        <label className="label flex-[1_1_220px]">
-          Арлын дугаар
-          <input name="vin" required defaultValue={ad.vin} className="input mono" />
-        </label>
-        <label className="label flex-[1_1_160px]">
           Утас
           <input name="phone" required defaultValue={ad.phone} className="input mono" />
         </label>
@@ -196,7 +186,7 @@ export function EditAdForm({ ad, userId, maxPhotos }: { ad: Ad; userId: string; 
           <OptionPicker value={options} onChange={setOptions} />
         </div>
         <label className="label flex-[1_1_300px]">
-          Нэмж хийсэн зүйлс
+          Нэмж хийсэн зүйлс <span className="font-normal text-muted">(заавал биш)</span>
           <textarea name="modifications" defaultValue={ad.modifications ?? ""} className="textarea font-normal" />
         </label>
         <label className="label flex-[1_1_300px]">

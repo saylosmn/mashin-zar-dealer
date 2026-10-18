@@ -140,7 +140,7 @@ export function PostForm({
   const checks = [
     { ok: photos.length >= minPhotos, label: `Зураг (${photos.length} / ${maxPhotos})` },
     { ok: Boolean(fields.brand && fields.yearMade), label: "Машин, сер, он" },
-    { ok: Boolean(fields.plate && fields.vin), label: "Дугаар, утас" },
+    { ok: fields.phone.replace(/\D/g, "").length >= 8, label: "Утас" },
     { ok: current.price > 0, label: "Үнэ" },
   ];
 
@@ -236,28 +236,8 @@ export function PostForm({
         </section>
 
         <section className="card flex flex-col gap-3.5 p-6">
-          <h2 className="m-0 text-[18px] font-bold">3 · Дугаар ба холбоо барих</h2>
+          <h2 className="m-0 text-[18px] font-bold">3 · Холбоо барих</h2>
           <div className="flex flex-wrap gap-3">
-            <label className="label flex-[1_1_200px]">
-              Улсын дугаар
-              <input
-                required
-                value={fields.plate}
-                onChange={(e) => set("plate")(e.target.value)}
-                className="input mono border-2 border-ink text-center text-[18px] font-bold tracking-[2px] uppercase"
-                placeholder="1234 УБА"
-              />
-            </label>
-            <label className="label flex-[1_1_200px]">
-              Арлын дугаар
-              <input
-                required
-                value={fields.vin}
-                onChange={(e) => set("vin")(e.target.value)}
-                className="input mono uppercase"
-                placeholder="ZVW55-8012345"
-              />
-            </label>
             <label className="label flex-[1_1_200px]">
               Утасны дугаар
               <input
@@ -270,9 +250,6 @@ export function PostForm({
               />
             </label>
           </div>
-          <span className="text-[13px] text-muted">
-            Улсын болон арлын дугаар бусдад нуугдмал харагдана. Зөвхөн манай ажилтан бүтнээр нь харна.
-          </span>
         </section>
 
         <section className="card flex flex-col gap-3.5 p-6">
@@ -282,21 +259,25 @@ export function PostForm({
 
         <section className="card flex flex-wrap gap-3.5 p-6">
           <label className="label flex-[1_1_300px]">
-            5 · Нэмж хийсэн зүйлс
+            <span>
+              5 · Нэмж хийсэн зүйлс <span className="font-normal text-muted">(заавал биш)</span>
+            </span>
             <textarea
               value={fields.modifications}
               onChange={(e) => set("modifications")(e.target.value)}
               className="textarea font-normal"
-              placeholder="Өвлийн шинэ дугуй, автозапуск, салоны бүрээс..."
+              placeholder="Бичихгүй байж болно. Жишээ нь: өвлийн шинэ дугуй, автозапуск, салоны бүрээс..."
             />
           </label>
           <label className="label flex-[1_1_300px]">
-            6 · Нэмэлт тайлбар
+            <span>
+              6 · Нэмэлт тайлбар <span className="font-normal text-muted">(заавал биш)</span>
+            </span>
             <textarea
               value={fields.description}
               onChange={(e) => set("description")(e.target.value)}
               className="textarea font-normal"
-              placeholder="Машины байдал, эзэмшлийн түүх, үзүүлэх цаг..."
+              placeholder="Бичихгүй байж болно. Жишээ нь: машины байдал, үзүүлэх цаг..."
             />
           </label>
         </section>

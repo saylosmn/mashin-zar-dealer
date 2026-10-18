@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getSettings, requireAdmin } from "@/lib/data";
+import { chatUnread, getSettings, requireAdmin } from "@/lib/data";
 import { categoryLong, dateShort, money, monthLabel, timeAgo } from "@/lib/format";
 import { monthStarts, pendingCount } from "@/lib/panel";
 import type { Ad } from "@shared/types";
@@ -32,7 +32,7 @@ export default async function AdminDashboard() {
     activeNew,
     sold,
     soldMonth,
-    flagsOpen,
+    chats,
     loans,
     weekly,
     log,
@@ -47,7 +47,7 @@ export default async function AdminDashboard() {
     supabase.from("ads").select("id", head).eq("status", "active").eq("category", "new"),
     supabase.from("ads").select("id", head).eq("status", "sold"),
     supabase.from("ads").select("id", head).eq("status", "sold").gte("sold_at", monthStart),
-    supabase.from("ad_flags").select("id", head).eq("status", "open"),
+    chatUnread(),
     supabase.from("loan_requests").select("id", head),
     supabase.from("ads").select("created_at").gte("created_at", weeks[0].toISOString()),
     supabase.from("activity_log").select("id,action,created_at").order("id", { ascending: false }).limit(8),
@@ -109,7 +109,7 @@ export default async function AdminDashboard() {
           sub={`${cy}+: ${activeNew.count ?? 0} · өмнө: ${(active.count ?? 0) - (activeNew.count ?? 0)}`}
         />
         <Kpi label="Зээлийн хүсэлт" value={loans.count ?? 0} sub="Лизинг →" href="/leasing?partner=all" />
-        <Kpi label="Нээлттэй гомдол" value={flagsOpen.count ?? 0} sub="Гомдол →" href="/admin/flags" />
+        <Kpi label="Уншаагүй чат" value={chats} sub="Чат →" href="/messages" />
       </div>
       <div className="flex flex-wrap items-start gap-4.5">
         <section className="card flex min-w-0 flex-[999_1_480px] flex-col gap-4 p-5">

@@ -14,6 +14,7 @@ import { Kpi } from "@/components/stats";
 import type { AdStatus } from "@shared/types";
 import { AdRow } from "@/features/panel/AdRow";
 import { IconBtn } from "@/features/panel/IconBtn";
+import { useChatUnread } from "@/lib/chat-unread";
 
 type Stats = {
   pending: number;
@@ -46,6 +47,7 @@ export default function PanelTab() {
 function Panel() {
   const { profile } = useAuth();
   const admin = isAdmin(profile);
+  const chats = useChatUnread(!!profile);
   const [stats, setStats] = useState<Stats>(EMPTY);
   const [status, setStatus] = useState<AdStatus>("active");
   const [q, setQ] = useState("");
@@ -158,10 +160,10 @@ function Panel() {
           <Kpi label="Илгээсэн санал" value={stats.offers} />
         )}
         <Kpi
-          label="Гомдол"
-          value={stats.flags}
-          sub={stats.flags ? "Шийдвэрлэх →" : "Алга"}
-          onPress={() => router.push("/panel/flags")}
+          label="Уншаагүй чат"
+          value={chats}
+          sub={chats ? "Хариулах →" : "Алга"}
+          onPress={() => router.push("/messages")}
         />
       </View>
 

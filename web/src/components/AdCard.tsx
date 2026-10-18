@@ -33,7 +33,7 @@ export function AdCard({ ad, cutoff }: { ad: PublicAd; cutoff: number }) {
           <span className="truncate text-[16px] font-semibold">
             {ad.brand} {ad.model}
           </span>
-          <span className="plate shrink-0">{ad.plate_masked}</span>
+          {ad.plate_masked && <span className="plate shrink-0">{ad.plate_masked}</span>}
         </div>
         <span className="truncate text-[13px] text-muted">
           Үйлд. {ad.year_made}

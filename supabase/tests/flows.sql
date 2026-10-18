@@ -41,6 +41,18 @@ set role anon;
 select pg_temp.eq((select count(*)::int from public.public_ads where id = :'ad'), 1, 'нийтэд харагдана');
 reset role;
 
+-- 1б. Улсын/арлын дугааргүй зар (заавал биш)
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+set role authenticated;
+insert into public.ads(user_id, brand, model, phone, year_made, price, photos)
+values ('00000000-0000-0000-0000-00000000000a','Toyota','Camry','99112233',2020,55000000,'{c.jpg}')
+returning id as ad_noplate \gset
+reset role;
+set role anon;
+select pg_temp.eq((select coalesce(plate_masked, '-') from public.public_ads where id = :'ad_noplate'), '-', 'дугааргүй зар нийтэд харагдана');
+reset role;
+delete from public.ads where id = :'ad_noplate';
+
 -- 2. Энгийн хэрэглэгч зар нэмж чадахгүй
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000e');
 set role authenticated;

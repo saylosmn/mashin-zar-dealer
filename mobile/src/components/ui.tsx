@@ -166,7 +166,7 @@ export function AdCard({
     brand: string;
     model: string;
     trim: string | null;
-    plate_masked: string;
+    plate_masked: string | null;
     year_made: number;
     year_imported: number | null;
     price: number;
@@ -255,7 +255,7 @@ export function AdCard({
           <T w="semibold" style={{ fontSize: 17, flexShrink: 1 }} numberOfLines={1}>
             {ad.brand} {ad.model}
           </T>
-          <Plate text={ad.plate_masked} />
+          {ad.plate_masked ? <Plate text={ad.plate_masked} /> : null}
         </View>
         <T style={{ fontSize: 13, color: C.muted }} numberOfLines={1}>
           Үйлд. {ad.year_made}

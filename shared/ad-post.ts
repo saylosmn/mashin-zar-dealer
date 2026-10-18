@@ -8,8 +8,8 @@ export type AdDraft = {
   brand: string;
   model: string;
   trim: string | null;
-  plate_number: string;
-  vin: string;
+  plate_number: string | null;
+  vin: string | null;
   phone: string;
   year_made: number;
   year_imported: number | null;
@@ -66,8 +66,8 @@ export function toDraft(f: AdFields): AdDraft {
     brand: f.brand.trim(),
     model: f.model.trim(),
     trim: f.trim.trim() || null,
-    plate_number: normalizeCode(f.plate),
-    vin: normalizeCode(f.vin),
+    plate_number: normalizeCode(f.plate) || null,
+    vin: normalizeCode(f.vin) || null,
     phone: f.phone.replace(/[^\d+]/g, ""),
     year_made: Number(f.yearMade),
     year_imported: Number(f.yearImported) || null,
@@ -83,7 +83,6 @@ export function draftError(d: AdDraft, photos: number, minPhotos: number): strin
   if (!d.brand || !d.model) return "Марк, загвараа оруулна уу.";
   if (!d.year_made || d.year_made < 1950 || d.year_made > new Date().getFullYear() + 1)
     return "Үйлдвэрлэсэн оноо зөв оруулна уу.";
-  if (!d.plate_number || !d.vin) return "Улсын болон арлын дугаараа оруулна уу.";
   if (d.phone.replace(/\D/g, "").length < 8) return "Утасны дугаараа оруулна уу.";
   if (!d.price) return "Үнээ оруулна уу.";
   return null;

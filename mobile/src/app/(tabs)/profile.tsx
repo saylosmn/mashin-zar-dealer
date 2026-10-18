@@ -6,7 +6,6 @@ import { C } from "@/lib/theme";
 import { initial, roleLabel } from "@/lib/format";
 import { Button, T, s } from "@/components/ui";
 import { openWebPanel } from "@/lib/staff";
-import { PushCard } from "@/components/PushCard";
 
 function ProfileTabInner() {
   const { profile, signOut } = useAuth();
@@ -68,7 +67,6 @@ function ProfileTabInner() {
           </View>
         ))}
       </View>
-      {profile?.id && <PushCard userId={profile.id} />}
       <Button
         title={profile?.profile_completed ? "Профайл засах" : "Профайл үүсгэх"}
         variant="ghost"

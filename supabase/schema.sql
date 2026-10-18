@@ -4647,3 +4647,7 @@ begin
 exception when others then
   raise notice 'push_secret үүсгэж чадсангүй (Vault алга?): %', sqlerrm;
 end $$;
+
+-- Дилерийн хувилбар: зар нэмэхэд улсын болон арлын дугаар заавал биш
+alter table public.ads alter column plate_number drop not null;
+alter table public.ads alter column vin drop not null;

@@ -9,7 +9,15 @@ import { errMsg, money, timeAgo } from "@/lib/format";
 import { confirm, isStaff, staffRpc } from "@/lib/staff";
 import { useLiveSync } from "@/lib/live";
 import { BackButton, Button, CardSkeleton, Input, Photo, StateView, T, s } from "@/components/ui";
-import { FLAG_REASONS } from "@/components/ReportAdSheet";
+
+const FLAG_REASONS: { key: string; label: string }[] = [
+  { key: "fake", label: "Хуурамч зар" },
+  { key: "sold", label: "Аль хэдийн зарагдсан" },
+  { key: "wrong_price", label: "Үнэ буруу" },
+  { key: "wrong_info", label: "Мэдээлэл, зураг буруу" },
+  { key: "scam", label: "Залилан, сэжигтэй" },
+  { key: "other", label: "Бусад" },
+];
 
 type Flag = {
   id: string;

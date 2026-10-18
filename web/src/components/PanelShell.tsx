@@ -2,15 +2,8 @@ import Link from "next/link";
 import { Logo } from "./Logo";
 import { OfflineBanner } from "./OfflineBanner";
 import { LiveSync } from "./LiveSync";
-import { createClient } from "@/lib/supabase/server";
+import { chatUnread } from "@/lib/data";
 import type { Profile } from "@shared/types";
-
-/** Шийдвэрлээгүй гомдлын тоо (цэсний тэмдэг). Хүснэгт байхгүй үед 0. */
-async function openFlags() {
-  const supabase = await createClient();
-  const { count } = await supabase.from("ad_flags").select("id", { count: "exact", head: true }).eq("status", "open");
-  return count ?? 0;
-}
 
 export type NavItem = { href: string; label: string; badge?: number; key: string };
 
@@ -31,7 +24,7 @@ export async function PanelShell({
 }) {
   const isAdmin = profile.role === "admin";
   // Дилерийн хувилбар: зар шалгах, төлбөр, шимтгэлийн тайлан цэснээс хасагдсан
-  const flags = area === "leasing" ? 0 : await openFlags();
+  const chats = area === "leasing" ? 0 : await chatUnread();
   const nav: NavItem[] =
     area === "leasing"
       ? [
@@ -56,7 +49,7 @@ export async function PanelShell({
           { key: "admin-users", href: "/admin/users", label: "Аккаунтууд" },
           { key: "admin-ads", href: "/admin/ads", label: "Зарууд" },
           { key: "post", href: "/post", label: "+ Зар нэмэх" },
-          { key: "admin-flags", href: "/admin/flags", label: "Гомдол", badge: flags },
+          { key: "messages", href: "/messages", label: "Чат (харилцагч)", badge: chats },
           { key: "admin-leasing", href: "/admin/leasing", label: "Лизинг: компаниуд" },
           { key: "leasing", href: "/leasing?partner=all", label: "Лизинг: хүсэлтүүд" },
           { key: "admin-notif", href: "/admin/notifications", label: "Мэдэгдэл" },

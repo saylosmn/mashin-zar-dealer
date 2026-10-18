@@ -24,7 +24,6 @@ import { adCache } from "@/lib/cache";
 import type { Partner } from "@/lib/loan";
 import { LoanCalculator } from "@/components/LoanCalculator";
 import { requireLogin } from "@/lib/guest";
-import { ReportAdSheet } from "@/components/ReportAdSheet";
 import { useCompare, COMPARE_MAX } from "@/lib/compare";
 import { expiryInfo } from "@shared/commission";
 
@@ -42,7 +41,6 @@ export default function AdDetail() {
   const [phone, setPhone] = useState<string | null>(null);
   const [phoneBusy, setPhoneBusy] = useState(false);
   const [partners, setPartners] = useState<Partner[]>([]);
-  const [reporting, setReporting] = useState(false);
   const compare = useCompare();
   const uid = session?.user.id;
 
@@ -239,8 +237,6 @@ export default function AdDetail() {
             {[
               ["Үйлдвэрлэсэн он", String(ad.year_made), false],
               ["Орж ирсэн он", ad.year_imported ? String(ad.year_imported) : "—", false],
-              ["Улсын дугаар", ad.plate_masked, true],
-              ["Арлын дугаар", ad.vin_masked, true],
             ].map(([k, v, mono]) => (
               <View
                 key={String(k)}
@@ -351,16 +347,6 @@ export default function AdDetail() {
                 style={{ flex: 1 }}
                 onPress={() => compare.toggle(ad.id)}
               />
-              {!mine && (
-                <Button
-                  small
-                  variant="ghost"
-                  icon="flag"
-                  title="Мэдээлэх"
-                  style={{ flex: 1 }}
-                  onPress={() => (uid ? setReporting(true) : requireLogin(`/ads/${id}`))}
-                />
-              )}
             </View>
           )}
           {compare.ids.length >= 2 ? (
@@ -467,7 +453,6 @@ export default function AdDetail() {
           />
         </View>
       )}
-      <ReportAdSheet adId={ad.id} visible={reporting} onClose={() => setReporting(false)} />
     </KeyboardAvoidingView>
   );
 }

@@ -9,11 +9,17 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       const forwardedHost = request.headers.get("x-forwarded-host");
       const base = process.env.NODE_ENV === "development" || !forwardedHost ? origin : `https://${forwardedHost}`;
-      return NextResponse.redirect(`${base}${next}`);
+      // Админ нэвтэрмэгц шууд удирдлагын самбар руу орно
+      let to = next;
+      if (next === "/" && data.user) {
+        const { data: me } = await supabase.from("profiles").select("role").eq("id", data.user.id).maybeSingle();
+        if (me?.role === "admin") to = "/admin";
+      }
+      return NextResponse.redirect(`${base}${to}`);
     }
   }
   return NextResponse.redirect(`${origin}/login?error=1`);

@@ -108,7 +108,6 @@ export default function CompareScreen() {
     },
     { label: "Ангилал", values: ads.map((a) => categoryLong(a.category, cy)) },
     { label: "Сер", values: ads.map((a) => a.trim || "—") },
-    { label: "Улсын дугаар", values: ads.map((a) => a.plate_masked) },
     {
       label: "Опшны тоо",
       values: ads.map((a) => String(a.options.length)),

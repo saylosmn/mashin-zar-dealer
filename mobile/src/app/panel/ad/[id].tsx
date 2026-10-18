@@ -200,8 +200,8 @@ export default function PanelAd() {
             <T w="bold" style={s.h2}>
               Машин
             </T>
-            <Row k="Улсын дугаар" v={ad.plate_number} mono />
-            <Row k="Арлын дугаар (VIN)" v={ad.vin} mono />
+            <Row k="Улсын дугаар" v={ad.plate_number ?? "—"} mono />
+            <Row k="Арлын дугаар (VIN)" v={ad.vin ?? "—"} mono />
             <Row k="Үйлдвэрлэсэн он" v={String(ad.year_made)} />
             <Row k="Орж ирсэн он" v={ad.year_imported ? String(ad.year_imported) : "—"} />
             <Row k="Сер" v={ad.trim || "—"} />

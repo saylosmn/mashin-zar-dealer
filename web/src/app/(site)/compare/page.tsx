@@ -71,14 +71,6 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: "Орж ирсэн он", cells: ads.map((a) => a.year_imported ?? "—"), best: bestImport },
     { label: "Ангилал", cells: ads.map((a) => categoryLong(a.category, cy)) },
     { label: "Сер", cells: ads.map((a) => a.trim || "—") },
-    {
-      label: "Улсын дугаар",
-      cells: ads.map((a) => (
-        <span key={a.id} className="plate">
-          {a.plate_masked}
-        </span>
-      )),
-    },
     { label: "Опшны тоо", cells: ads.map((a) => a.options.length), best: bestOptions },
     {
       label: "Нэмж хийсэн",

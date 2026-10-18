@@ -10,7 +10,6 @@ import { Gallery } from "./Gallery";
 import { ContactBox } from "./ContactBox";
 import { LoanCalculator } from "./LoanCalculator";
 import { ViewCounter } from "./ViewCounter";
-import { ReportAdButton } from "./ReportAdButton";
 import { CompareToggle } from "@/components/Compare";
 import { expiryInfo } from "@shared/commission";
 import { SITE_NAME, siteUrl } from "@/lib/site";
@@ -180,8 +179,6 @@ export default async function AdPage({ params }: { params: Promise<{ id: string 
             {[
               ["Үйлдвэрлэсэн он", String(ad.year_made), false],
               ["Орж ирсэн он", ad.year_imported ? String(ad.year_imported) : "—", false],
-              ["Улсын дугаар", ad.plate_masked, true],
-              ["Арлын дугаар", ad.vin_masked, true],
             ].map(([k, v, mono]) => (
               <div key={String(k)} className="flex flex-col gap-1 rounded-xl bg-paper p-3">
                 <dt className="text-[12px] text-muted">{k}</dt>
@@ -200,7 +197,6 @@ export default async function AdPage({ params }: { params: Promise<{ id: string 
               Миний зарууд руу
             </Link>
           )}
-          {!mine && ad.status === "active" && <ReportAdButton adId={ad.id} loginHref={loginHref} />}
           {ad.seller_name && (
             <div className="flex items-center gap-3 border-t border-[#ecede9] pt-4">
               <div

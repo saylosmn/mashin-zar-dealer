@@ -96,34 +96,11 @@ export function AdDetailsForm({ fields, set, cutoff }: Props) {
 
       <View style={{ gap: 12 }}>
         <T w="bold" style={s.h2}>
-          4 · Дугаар ба холбоо барих
+          4 · Холбоо барих
         </T>
-        <Field label="Улсын дугаар">
-          <Input
-            value={fields.plate}
-            onChangeText={set("plate")}
-            autoCapitalize="characters"
-            strong
-            mono
-            placeholder="1234 УБА"
-            style={{ textAlign: "center", fontSize: 18, letterSpacing: 2 }}
-          />
-        </Field>
-        <Field label="Арлын дугаар">
-          <Input
-            value={fields.vin}
-            onChangeText={set("vin")}
-            autoCapitalize="characters"
-            mono
-            placeholder="ZVW55-8012345"
-          />
-        </Field>
         <Field label="Утасны дугаар">
           <Input value={fields.phone} onChangeText={set("phone")} keyboardType="phone-pad" mono />
         </Field>
-        <T style={{ fontSize: 12, color: C.muted, lineHeight: 18 }}>
-          Улсын болон арлын дугаар бусдад нуугдмал харагдана. Зөвхөн манай ажилтан бүтнээр нь харна.
-        </T>
       </View>
 
       <View style={{ gap: 12 }}>
@@ -133,20 +110,20 @@ export function AdDetailsForm({ fields, set, cutoff }: Props) {
         <OptionPicker value={fields.options} onChange={set("options")} />
       </View>
 
-      <Field label="6 · Нэмж хийсэн зүйлс">
+      <Field label="6 · Нэмж хийсэн зүйлс (заавал биш)">
         <Input
           value={fields.modifications}
           onChangeText={set("modifications")}
           multiline
-          placeholder="Өвлийн шинэ дугуй, автозапуск, салоны бүрээс..."
+          placeholder="Бичихгүй байж болно. Жишээ нь: өвлийн шинэ дугуй, автозапуск..."
         />
       </Field>
-      <Field label="7 · Нэмэлт тайлбар">
+      <Field label="7 · Нэмэлт тайлбар (заавал биш)">
         <Input
           value={fields.description}
           onChangeText={set("description")}
           multiline
-          placeholder="Машины байдал, эзэмшлийн түүх, үзүүлэх цаг..."
+          placeholder="Бичихгүй байж болно. Жишээ нь: машины байдал, үзүүлэх цаг..."
           style={{ minHeight: 110 }}
         />
       </Field>

@@ -28,8 +28,8 @@ export type Ad = {
   brand: string;
   model: string;
   trim: string | null;
-  plate_number: string;
-  vin: string;
+  plate_number: string | null;
+  vin: string | null;
   phone: string;
   year_made: number;
   year_imported: number | null;
@@ -87,8 +87,8 @@ export type PublicAd = {
   brand: string;
   model: string;
   trim: string | null;
-  plate_masked: string;
-  vin_masked: string;
+  plate_masked: string | null;
+  vin_masked: string | null;
   year_made: number;
   year_imported: number | null;
   options: string[];

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Pressable, View } from "react-native";
 import { Tabs } from "expo-router/js-tabs";
 import { router } from "expo-router";
@@ -24,6 +25,14 @@ export default function TabsLayout() {
   // Дилерийн хувилбар: «Зар нэмэх» товч зөвхөн админд. Хэрэглэгчид «Миний зар» биш «Хадгалсан».
   const admin = profile?.role === "admin";
   const chats = useChatUnread(!!session);
+  // Админ апп нээх/нэвтрэх үед шууд «Удирдлага» таб руу орно (нэг удаа)
+  const sentToPanel = useRef<string | null>(null);
+  useEffect(() => {
+    if (admin && profile?.id && sentToPanel.current !== profile.id) {
+      sentToPanel.current = profile.id;
+      setTimeout(() => router.navigate("/panel"), 0);
+    }
+  }, [admin, profile?.id]);
   return (
     <Tabs
       screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: C.paper } }}
