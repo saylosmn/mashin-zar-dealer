@@ -33,7 +33,7 @@ export default async function OgImage() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div style={{ fontSize: 76, fontWeight: 800, lineHeight: 1.05, maxWidth: 980 }}>
-            Дараагийн машинаа эндээс ол.
+            Таны сонирхсон машин бүгд энд.
           </div>
           <div style={{ fontSize: 34, color: "#b7bcc4" }}>
             Бэлэн машинууд · лизингийн тооцоолуур · шинэ машины мэдэгдэл

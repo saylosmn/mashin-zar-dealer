@@ -49,7 +49,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
             💬
           </span>
           <p className="m-0 max-w-[380px] text-[15px] text-body">
-            Чат алга. Зарын хуудсан дээрх «Худалдагчтай чатлах» товчоор асуултаа илгээнэ үү.
+            Чат алга. Зарын хуудсан дээрх «Борлуулагчтай чатлах» товчоор асуултаа илгээнэ үү.
           </p>
           <Link href="/" className="btn btn-lg btn-ink">
             Зарууд үзэх

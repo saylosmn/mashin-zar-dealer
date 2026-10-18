@@ -35,14 +35,14 @@ export default async function LoginPage({
             </span>
           </div>
           <h1 className="h-display m-0 text-[clamp(34px,4vw,56px)] leading-[1.08]">
-            Машинаа зар. Дараагийнхаа машиныг ол.
+            Таны сонирхсон машин бүгд энд байна.
           </h1>
           <p className="m-0 text-[18px] leading-relaxed text-pale">
-            Бэлэн машинууд, 16 хүртэл зураг, шинэ зар орох бүрт мэдэгдэл.
+            Бэлэн машинууд, 16 хүртэл зураг, лизингийн тооцоолуур. Шинэ машин орох бүрт мэдэгдэл авна.
           </p>
         </div>
         <ol className="m-0 flex list-none flex-wrap gap-8 p-0">
-          {["Google-ээр нэвтэр", "Профайл үүсгэ", "Зараа тавь"].map((t, i) => (
+          {["Google-ээр нэвтэр", "Машинаа сонго", "Лизингээр ав"].map((t, i) => (
             <li key={t} className="flex flex-col gap-1">
               <span className="mono text-[14px] font-bold text-yellow">0{i + 1}</span>
               <span className="text-[14px] text-[#c9cdd3]">{t}</span>

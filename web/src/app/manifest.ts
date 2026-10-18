@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Auto car",
     short_name: "Auto car",
-    description: "Шалгагдсан автомашины зарууд",
+    description: "Таны сонирхсон машин бүгд энд",
     id: "/",
     start_url: "/",
     scope: "/",

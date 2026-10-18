@@ -40,7 +40,7 @@ export default async function StartChatPage({ params }: { params: Promise<{ adId
           <span className="text-[12px] text-muted">{ad.seller_shop ?? ad.seller_name}</span>
         </div>
       </Link>
-      <h1 className="h-display m-0 text-[22px]">Худалдагчид бичих</h1>
+      <h1 className="h-display m-0 text-[22px]">Борлуулагчид бичих</h1>
       <StartChatForm adId={ad.id} />
       <p className="m-0 text-[12px] leading-relaxed text-muted">
         Урьдчилгаа мөнгө машинаа үзэхээс өмнө бүү шилжүүл. Чатыг аюулгүй байдлын үүднээс манай ажилтан харах боломжтой.

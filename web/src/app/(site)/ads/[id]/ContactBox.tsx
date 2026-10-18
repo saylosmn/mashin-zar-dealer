@@ -42,9 +42,9 @@ export function ContactBox({
           </Link>
         </div>
         <Link href={`/login?next=${encodeURIComponent(chatHref)}`} className="btn btn-lg btn-ink">
-          💬 Худалдагчтай чатлах
+          💬 Борлуулагчтай чатлах
         </Link>
-        <span className="text-[12px] text-muted">Худалдагчийн утас, чат нэвтэрсэн хэрэглэгчид харагдана.</span>
+        <span className="text-[12px] text-muted">Борлуулагчийн утас, чат нэвтэрсэн хэрэглэгчид харагдана.</span>
       </div>
     );
 
@@ -88,7 +88,7 @@ export function ContactBox({
         </button>
       </div>
       <Link href={chatHref} className="btn btn-lg btn-ink">
-        💬 Худалдагчтай чатлах
+        💬 Борлуулагчтай чатлах
       </Link>
       {err && (
         <p role="alert" className="m-0 rounded-xl bg-danger-bg px-3.5 py-2.5 text-[13px] text-[#9b1c1c]">

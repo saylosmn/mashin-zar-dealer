@@ -23,9 +23,7 @@ export default async function BlockedPage() {
         </form>
       }
     >
-      <p className="m-0">
-        Админ таны аккаунтыг хаасан тул шинэ зар тавих, зараа удирдах боломжгүй. Дэлгэрэнгүйг манай багаас асууна уу.
-      </p>
+      <p className="m-0">Таны аккаунт хаагдсан байна. Дэлгэрэнгүйг манай багаас асууна уу.</p>
       <p className="m-0 mt-2 text-[14px] text-muted">{p.email}</p>
     </PageMessage>
   );

@@ -238,7 +238,7 @@ export default function Notifications() {
     <GuestGate
       icon="bell"
       title="Мэдэгдэл"
-      text="Нэвтэрвэл таны зар батлагдах, санал ирэх, шинэ зар гарахад мэдэгдэл ирнэ."
+      text="Нэвтэрвэл шинэ машин орох, лизингийн хүсэлтийн хариу ирэхэд мэдэгдэл ирнэ."
       next="/notifications"
     >
       <NotificationsInner />

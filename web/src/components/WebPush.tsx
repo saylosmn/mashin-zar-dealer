@@ -51,7 +51,7 @@ export function WebPushCard() {
           <span className="text-[15px] font-bold">Утсанд мэдэгдэл авах</span>
           <span className="text-[13px] leading-snug text-muted">
             {state === "on" && "Асаалттай ✓ Шинэ зар, санал, зарын төлөв өөрчлөгдөхөд утсанд тань мэдэгдэл ирнэ."}
-            {state === "off" && "Шинэ зар, санал ирэхэд апп хаалттай байсан ч утсанд мэдэгдэл ирнэ."}
+            {state === "off" && "Шинэ машин орох, лизингийн хариу ирэхэд сайт хаалттай байсан ч мэдэгдэл ирнэ."}
             {state === "denied" &&
               "Мэдэгдэл хаагдсан байна. Утасны Тохиргоо → Мэдэгдэл → Auto car хэсгээс зөвшөөрнө үү."}
             {state === "ios-install" &&
@@ -88,7 +88,7 @@ export function PushPrompt() {
     <div className="bg-yellow text-ink">
       <div className="mx-auto flex max-w-[1280px] items-center gap-3 px-4 py-2.5 sm:px-6">
         <IconBell size={18} />
-        <span className="flex-1 text-[13px] font-semibold">Шинэ зар, санал ирэхэд мэдэгдэл авах уу?</span>
+        <span className="flex-1 text-[13px] font-semibold">Шинэ машин орохад мэдэгдэл авах уу?</span>
         <button
           disabled={busy}
           onClick={async () => {

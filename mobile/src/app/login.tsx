@@ -63,10 +63,10 @@ export default function Login() {
             </View>
           </View>
           <T w="display" style={{ color: C.paper, fontSize: 32, lineHeight: 38 }}>
-            Машинаа зар.{"\n"}Дараагийнхаа машиныг ол.
+            Таны сонирхсон машин{"\n"}бүгд энд байна.
           </T>
           <T style={{ color: C.pale, fontSize: 16, lineHeight: 24 }}>
-            Улсын болон арлын дугаартай, 16 хүртэл зурагтай, шалгагдсан зарууд.
+            Бэлэн машинууд, 16 хүртэл зураг, лизингийн тооцоолуур. Шинэ машин орох бүрт мэдэгдэл авна.
           </T>
         </View>
       </View>
@@ -78,7 +78,7 @@ export default function Login() {
         )}
         <Button
           title="Google-ээр нэвтрэх"
-          accessibilityHint="Зар тавих, хадгалах, лизингийн хүсэлт илгээхэд нэвтэрнэ"
+          accessibilityHint="Машин хадгалах, лизингийн хүсэлт илгээхэд нэвтэрнэ"
           icon="log-in"
           loading={busy}
           style={{ backgroundColor: C.paper }}
@@ -95,7 +95,7 @@ export default function Login() {
             }
           }}
         />
-        <Button title="Нэвтрэлгүйгээр зар үзэх" variant="darkGhost" onPress={skip} />
+        <Button title="Нэвтрэлгүйгээр машин үзэх" variant="darkGhost" onPress={skip} />
         <T style={{ textAlign: "center", fontSize: 13, color: "#9AA0A9", lineHeight: 20 }}>
           Нэвтэрснээр{" "}
           <T style={{ color: C.yellow, fontSize: 13 }} onPress={() => Linking.openURL(`${WEB_URL}/terms`)}>

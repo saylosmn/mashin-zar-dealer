@@ -11,7 +11,7 @@ export default function Blocked() {
       iconBg={C.dangerBg}
       iconColor="#9B1C1C"
       title="Таны аккаунт түр хаагдсан байна"
-      text="Админ таны аккаунтыг хаасан тул шинэ зар тавих, зараа удирдах боломжгүй. Дэлгэрэнгүйг манай багаас асууна уу."
+      text="Таны аккаунт хаагдсан байна. Дэлгэрэнгүйг манай багаас асууна уу."
     >
       <View style={{ alignItems: "center", paddingBottom: 6 }}>
         <T style={{ color: C.muted, fontSize: 13 }}>{profile?.email}</T>

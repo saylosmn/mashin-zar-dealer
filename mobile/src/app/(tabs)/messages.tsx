@@ -52,7 +52,7 @@ function MessagesInner() {
             <View style={{ alignItems: "center", gap: 12, paddingVertical: 48 }}>
               <T style={{ fontSize: 40 }}>💬</T>
               <T style={{ color: C.body, textAlign: "center", lineHeight: 21 }}>
-                Чат алга. Зарын дэлгэц дээрх «Чат» товчоор худалдагчид бичнэ үү.
+                Чат алга. Машины дэлгэц дээрх «Чат» товчоор манай борлуулагчид бичнэ үү.
               </T>
             </View>
           ) : (
@@ -120,12 +120,7 @@ function MessagesInner() {
 
 export default function MessagesTab() {
   return (
-    <GuestGate
-      icon="message-circle"
-      title="Чат"
-      text="Нэвтэрч худалдагч, худалдан авагчтай шууд чатлана."
-      next="/messages"
-    >
+    <GuestGate icon="message-circle" title="Чат" text="Нэвтэрч манай борлуулагчтай шууд чатлана." next="/messages">
       <MessagesInner />
     </GuestGate>
   );

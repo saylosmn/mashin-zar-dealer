@@ -193,7 +193,7 @@ export default function ChatScreen() {
           contentContainerStyle={{ padding: 12, gap: 6, flexGrow: 1 }}
           ListEmptyComponent={
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 8, padding: 24 }}>
-              <T style={{ color: C.muted, textAlign: "center" }}>Худалдагчид анхны мессежээ бичээрэй.</T>
+              <T style={{ color: C.muted, textAlign: "center" }}>Борлуулагчид анхны мессежээ бичээрэй.</T>
               <T style={{ color: C.muted, fontSize: 12, textAlign: "center" }}>
                 Урьдчилгаа мөнгө машинаа үзэхээс өмнө бүү шилжүүл.
               </T>

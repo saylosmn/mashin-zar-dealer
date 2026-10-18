@@ -92,7 +92,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
       </section>
 
       <aside className="flex flex-[1_1_300px] flex-col gap-4 rounded-2xl bg-ink p-5 text-paper">
-        <span className="h-display text-[16px]">Шинэ зарын мэдэгдэл</span>
+        <span className="h-display text-[16px]">Шинэ машины мэдэгдэл</span>
         {saved && (
           <p role="status" className="m-0 flex items-center gap-1.5 text-[13px] text-yellow">
             <IconCheck size={16} /> Тохиргоо хадгалагдлаа
@@ -100,7 +100,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
         )}
         <form action={saveNotifyPrefs} className="flex flex-col gap-3.5">
           <label className="flex items-center justify-between gap-3 text-[14px] font-semibold">
-            Шинэ зар батлагдахад мэдэгдэх
+            Шинэ машин орохад мэдэгдэх
             <input
               type="checkbox"
               name="notify_new_ads"

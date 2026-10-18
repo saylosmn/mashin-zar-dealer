@@ -118,7 +118,7 @@ export default function ProfileTab() {
     <GuestGate
       icon="user"
       title="Профайл"
-      text="Нэвтэрч профайлаа үүсгээд зар тавьж, лизингийн хүсэлт илгээнэ."
+      text="Нэвтэрч таалагдсан машинаа хадгалж, лизингийн хүсэлт илгээнэ."
       next="/profile"
     >
       <ProfileTabInner />
