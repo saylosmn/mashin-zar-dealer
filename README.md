@@ -8,6 +8,9 @@
   «Шинэ зар ба санал», «Зар тавьсан хүмүүс», «Төлбөрүүд», «Тайлангууд» цэс.
 - Лизинг (тооцоолуур, хүсэлт, түнш компаниуд) хэвээр.
 
+Вэб: GitHub `main` руу push → Vercel (project auto-car-web, Root Directory = web) автоматаар deploy.
+APK: `release-app.bat` (build → `release/apk-url.txt` → GitHub Release). Вэбийн "Апп татах" хамгийн сүүлийн Release-ийг татуулна.
+
 Шинэ харилцагчид суулгахдаа: шинэ Supabase project → `supabase/schema.sql`, Vercel дээр шинэ project,
 `mobile/app.json`-д апп-ын нэр, `package`, `slug`, лого, `mobile/src/lib/staff.ts`-ийн `WEB_URL`-ийг солино.
 
