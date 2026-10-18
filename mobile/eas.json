@@ -19,7 +19,8 @@
         "EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_M-LrJC1rWk67sFw6j6NBIA_r7K8co82"
       },
       "channel": "preview",
-      "credentialsSource": "local"
+      "credentialsSource": "local",
+      "autoIncrement": true
     },
     "production": {
       "autoIncrement": true,
