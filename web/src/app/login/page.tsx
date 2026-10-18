@@ -38,7 +38,7 @@ export default async function LoginPage({
             Машинаа зар. Дараагийнхаа машиныг ол.
           </h1>
           <p className="m-0 text-[18px] leading-relaxed text-pale">
-            Шалгагдсан зарууд, 16 хүртэл зураг, шинэ зар орох бүрт мэдэгдэл.
+            Бэлэн машинууд, 16 хүртэл зураг, шинэ зар орох бүрт мэдэгдэл.
           </p>
         </div>
         <ol className="m-0 flex list-none flex-wrap gap-8 p-0">
