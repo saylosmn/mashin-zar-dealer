@@ -115,3 +115,15 @@ export function specsToDb(f: SpecFields) {
     color: f.color.trim() || null,
   };
 }
+
+const SPEC_KEYS = ["mileage_km", "engine_l", "fuel", "transmission", "steering", "drive", "color"] as const;
+
+/** DB шинэчлэгдээгүй (багана байхгүй) үед үзүүлэлтгүйгээр дахин оролдохын тулд хасна */
+export function withoutSpecs<T extends Record<string, unknown>>(row: T): T {
+  const r: Record<string, unknown> = { ...row };
+  for (const k of SPEC_KEYS) delete r[k];
+  return r as T;
+}
+
+/** Баганагүй алдаа эсэх (PostgREST PGRST204 / Postgres 42703) */
+export const missingColumn = (e: { code?: string } | null | undefined) => e?.code === "PGRST204" || e?.code === "42703";

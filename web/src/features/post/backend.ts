@@ -1,4 +1,5 @@
 import type { AdBackend } from "@shared/ad-post";
+import { missingColumn, withoutSpecs } from "@shared/specs";
 import { createClient } from "@/lib/supabase/client";
 
 /** Том зургийг 1600px хүртэл багасгаж JPEG болгоно */
@@ -44,9 +45,11 @@ export function adBackend(userId: string, files: File[]): AdBackend {
       return data as string;
     },
     async insertAd(row) {
-      const { data, error } = await supabase.from("ads").insert(row).select("id").single();
-      if (error) throw error;
-      return data.id as string;
+      let res = await supabase.from("ads").insert(row).select("id").single();
+      // Үзүүлэлтийн багана DB-д хараахан нэмэгдээгүй бол тэдгээргүйгээр хадгална
+      if (missingColumn(res.error)) res = await supabase.from("ads").insert(withoutSpecs(row)).select("id").single();
+      if (res.error) throw res.error;
+      return res.data.id as string;
     },
   };
 }

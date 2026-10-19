@@ -1,6 +1,7 @@
 import { Platform } from "react-native";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import type { AdBackend } from "@shared/ad-post";
+import { missingColumn, withoutSpecs } from "@shared/specs";
 import { supabase } from "@/lib/supabase";
 import { WEB_URL } from "@/lib/staff";
 
@@ -42,9 +43,11 @@ export function adBackend(uid: string, photoUris: string[]): AdBackend {
       return data as string;
     },
     async insertAd(row) {
-      const { data, error } = await supabase.from("ads").insert(row).select("id").single();
-      if (error) throw error;
-      return data.id as string;
+      let res = await supabase.from("ads").insert(row).select("id").single();
+      // Үзүүлэлтийн багана DB-д хараахан нэмэгдээгүй бол тэдгээргүйгээр хадгална
+      if (missingColumn(res.error)) res = await supabase.from("ads").insert(withoutSpecs(row)).select("id").single();
+      if (res.error) throw res.error;
+      return res.data.id as string;
     },
   };
 }
