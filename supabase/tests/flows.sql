@@ -170,6 +170,26 @@ set role authenticated;
 select pg_temp.eq((select count(*)::int from public.messages), 3, 'нөгөө админ чат уншина');
 reset role;
 
+-- 8б. Үзүүлэлт, захиалгатай, үнэ буурах мэдэгдэл, статистик
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000e');
+set role authenticated;
+insert into public.favorites(user_id, ad_id) values (auth.uid(), :'ad2');
+select pg_temp.fails(format($$select public.dealer_set_reserved(%L, true)$$, :'ad2'), 'хэрэглэгч захиалгатай болгохгүй');
+select pg_temp.fails(format($$select * from public.ad_stats(array[%L]::uuid[])$$, :'ad2'), 'хэрэглэгч статистик харахгүй');
+reset role;
+select pg_temp.as_user('00000000-0000-0000-0000-00000000000a');
+set role authenticated;
+select public.dealer_update_ad(:'ad2', '{"mileage_km":"85000","engine_l":"3.5","fuel":"hybrid","transmission":"auto","steering":"left","drive":"awd","color":"Цагаан","price":75000000}'::jsonb);
+select public.dealer_set_reserved(:'ad2', true);
+select pg_temp.eq((select format('%s/%s/%s', views, phone_views, saves) from public.ad_stats(array[:'ad2']::uuid[])), '0/1/1', 'статистик');
+reset role;
+set role anon;
+select pg_temp.eq((select format('%s|%s|%s|%s|%s|%s|%s|%s', mileage_km, engine_l, fuel, transmission, steering, drive, color, reserved) from public.public_ads where id = :'ad2'),
+  '85000|3.5|hybrid|auto|left|awd|Цагаан|t', 'үзүүлэлт, захиалгатай нийтэд харагдана');
+reset role;
+select pg_temp.eq((select count(*)::int from public.notifications where user_id = '00000000-0000-0000-0000-00000000000e' and type = 'price_drop' and ad_id = :'ad2'), 1, 'үнэ буурахад хадгалсан хүнд мэдэгдэл');
+select pg_temp.fails(format($$update public.ads set fuel = 'water' where id = %L$$, :'ad2'), 'шатахууны буруу утга');
+
 -- 9. Админ зарагдсан гэж тэмдэглэнэ, хэрэглэгч чадахгүй
 select pg_temp.as_user('00000000-0000-0000-0000-00000000000e');
 set role authenticated;
