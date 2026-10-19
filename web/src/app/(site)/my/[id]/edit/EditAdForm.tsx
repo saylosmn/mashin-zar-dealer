@@ -7,6 +7,8 @@ import { errMsg, photoUrl } from "@/lib/format";
 import { IconCamera, IconClose, IconSpinner } from "@/components/icons";
 import { OptionPicker } from "@/components/OptionPicker";
 import type { Ad } from "@shared/types";
+import { specFieldsFrom, specsToDb, type SpecFields } from "@shared/specs";
+import { SpecInputs } from "@/features/post/SpecInputs";
 
 type Pic = { key: string; path?: string; file?: File; url: string };
 
@@ -30,6 +32,7 @@ export function EditAdForm({ ad, userId, maxPhotos }: { ad: Ad; userId: string; 
   const [pics, setPics] = useState<Pic[]>(ad.photos.map((p) => ({ key: p, path: p, url: photoUrl(p) ?? "" })));
   const [price, setPrice] = useState(fmt(ad.price));
   const [options, setOptions] = useState<string[]>(ad.options);
+  const [specs, setSpecs] = useState<SpecFields>(() => specFieldsFrom(ad));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,6 +85,7 @@ export function EditAdForm({ ad, userId, maxPhotos }: { ad: Ad; userId: string; 
           description: str("description"),
           price: p,
           photos: paths,
+          ...specsToDb(specs),
         },
       });
       if (rpcErr) throw rpcErr;
@@ -181,6 +185,12 @@ export function EditAdForm({ ad, userId, maxPhotos }: { ad: Ad; userId: string; 
           Утас
           <input name="phone" required defaultValue={ad.phone} className="input mono" />
         </label>
+        <div className="flex basis-full flex-col gap-2">
+          <span className="text-[13px] font-semibold">
+            Үндсэн үзүүлэлт <span className="font-normal text-muted">(заавал биш)</span>
+          </span>
+          <SpecInputs value={specs} onChange={(k, v) => setSpecs((s) => ({ ...s, [k]: v }))} />
+        </div>
         <div className="flex basis-full flex-col gap-2">
           <span className="text-[13px] font-semibold">Опшн</span>
           <OptionPicker value={options} onChange={setOptions} />

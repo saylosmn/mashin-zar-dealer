@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { categoryLong, dateShort, money } from "@/lib/format";
 import { CarPhoto } from "./CarPhoto";
 import { StatusBadge } from "./StatusBadge";
-import { adminDeleteAd, approveAd, markSold, setFeatured } from "@/actions/ads";
+import { adminDeleteAd, approveAd, dealerSetReserved, markSold, setFeatured } from "@/actions/ads";
 import { expiryInfo, isFeatured } from "@shared/commission";
 import type { Ad, AdStatus } from "@shared/types";
 
@@ -47,6 +47,12 @@ export async function AdsTable({
     );
   const { data, count } = await query;
   const rows = (data ?? []) as Row[];
+  // Зар бүрийн сонирхол: үзэлт, утас харсан, хадгалсан
+  type Stat = { ad_id: string; views: number; phone_views: number; saves: number };
+  const { data: statRows } = rows.length
+    ? await supabase.rpc("ad_stats", { p_ids: rows.map((r) => r.id) })
+    : { data: [] as Stat[] };
+  const statOf = new Map(((statRows ?? []) as Stat[]).map((r) => [r.ad_id, r]));
   const total = count ?? 0;
   const pages = Math.max(1, Math.ceil(total / PAGE));
   const self = `${basePath}?${new URLSearchParams(Object.entries(sp).filter(([k, v]) => v && k !== "ok" && k !== "err") as [string, string][]).toString()}`;
@@ -103,7 +109,7 @@ export async function AdsTable({
           <thead>
             <tr>
               <th>Машин</th>
-              <th>Улсын дугаар</th>
+              <th title="Үзэлт · Утас харсан · Хадгалсан">Сонирхол</th>
               <th>Ангилал</th>
               <th>Үнэ</th>
               <th>Хэрэглэгч</th>
@@ -130,8 +136,10 @@ export async function AdsTable({
                     </span>
                   </Link>
                 </td>
-                <td>
-                  <span className="plate text-[13px]">{a.plate_number}</span>
+                <td className="mono text-[12px] whitespace-nowrap">
+                  {statOf.get(a.id)
+                    ? `👁 ${statOf.get(a.id)!.views} · ☎ ${statOf.get(a.id)!.phone_views} · ♥ ${statOf.get(a.id)!.saves}`
+                    : a.views}
                 </td>
                 <td className="text-body">{categoryLong(a.category, cutoff)}</td>
                 <td className="h-display text-[13px]">
@@ -141,6 +149,9 @@ export async function AdsTable({
                 <td>
                   <div className="flex flex-col items-start gap-1">
                     <StatusBadge status={a.status} />
+                    {a.reserved && a.status === "active" && (
+                      <span className="text-[11px] font-semibold text-pending-fg">🔖 Захиалгатай</span>
+                    )}
                     {a.status === "active" && expiryInfo(a.expires_at).expired && (
                       <span className="text-[11px] font-semibold text-[#9b1c1c]">Хугацаа дууссан</span>
                     )}
@@ -184,10 +195,26 @@ export async function AdsTable({
                         </button>
                       </form>
                     )}
+                    {admin && a.status === "active" && (
+                      <form action={dealerSetReserved}>
+                        <input type="hidden" name="id" value={a.id} />
+                        <input type="hidden" name="back" value={self} />
+                        <input type="hidden" name="reserved" value={a.reserved ? "0" : "1"} />
+                        <button className="btn btn-sm btn-ghost whitespace-nowrap">
+                          {a.reserved ? "Захиалга цуцлах" : "🔖 Захиалгатай"}
+                        </button>
+                      </form>
+                    )}
                     {admin && (
                       <>
-                        <Link href={`/admin/ads/${a.id}`} className="btn btn-sm btn-ghost">
+                        <Link
+                          href={a.status === "sold" ? `/admin/ads/${a.id}` : `/my/${a.id}/edit`}
+                          className="btn btn-sm btn-ghost"
+                        >
                           Засах
+                        </Link>
+                        <Link href={`/post?from=${a.id}`} className="btn btn-sm btn-ghost">
+                          Хуулах
                         </Link>
                         <form action={adminDeleteAd}>
                           <input type="hidden" name="id" value={a.id} />

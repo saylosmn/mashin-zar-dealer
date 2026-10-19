@@ -25,6 +25,7 @@ import { adBackend } from "@/features/post/backend";
 import { PhotoPicker, type Photo } from "@/features/post/PhotoPicker";
 import { PlanDialog } from "@/features/post/PlanDialog";
 import { checkAgentCode } from "../actions";
+import { SpecInputs } from "@/features/post/SpecInputs";
 
 type Busy = { step: PublishStep; done: number } | null;
 
@@ -39,6 +40,7 @@ export function PostForm({
   dealer = false,
   defaultAgentCode = "",
   plans,
+  initial,
 }: {
   userId: string;
   defaultPhone: string;
@@ -51,10 +53,12 @@ export function PostForm({
   /** Агентын холбоосоор (?ref=КОД) орж ирсэн бол */
   defaultAgentCode?: string;
   plans: PlanSettings;
+  /** «Хуулж шинэ зар» үед бөглөгдсөн утгууд */
+  initial?: AdFields;
 }) {
   const router = useRouter();
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [fields, setFields] = useState<AdFields>(() => emptyAdFields(defaultPhone));
+  const [fields, setFields] = useState<AdFields>(() => initial ?? emptyAdFields(defaultPhone));
   const [agentCode, setAgentCode] = useState(defaultAgentCode);
   const [agent, setAgent] = useState<{ code: string; id: string; name: string } | null>(null);
   /** Маягт шалгагдсаны дараах цонх (сонголт -> гэрээ/төлбөр) */
@@ -236,7 +240,14 @@ export function PostForm({
         </section>
 
         <section className="card flex flex-col gap-3.5 p-6">
-          <h2 className="m-0 text-[18px] font-bold">3 · Холбоо барих</h2>
+          <h2 className="m-0 text-[18px] font-bold">
+            3 · Үндсэн үзүүлэлт <span className="text-[14px] font-normal text-muted">(заавал биш)</span>
+          </h2>
+          <SpecInputs value={fields} onChange={(k, v) => setFields((f) => ({ ...f, [k]: v }))} />
+        </section>
+
+        <section className="card flex flex-col gap-3.5 p-6">
+          <h2 className="m-0 text-[18px] font-bold">4 · Холбоо барих</h2>
           <div className="flex flex-wrap gap-3">
             <label className="label flex-[1_1_200px]">
               Утасны дугаар
@@ -253,14 +264,14 @@ export function PostForm({
         </section>
 
         <section className="card flex flex-col gap-3.5 p-6">
-          <h2 className="m-0 text-[18px] font-bold">4 · Нэмэлт опшн</h2>
+          <h2 className="m-0 text-[18px] font-bold">5 · Нэмэлт опшн</h2>
           <OptionPicker value={fields.options} onChange={set("options")} />
         </section>
 
         <section className="card flex flex-wrap gap-3.5 p-6">
           <label className="label flex-[1_1_300px]">
             <span>
-              5 · Нэмж хийсэн зүйлс <span className="font-normal text-muted">(заавал биш)</span>
+              6 · Нэмж хийсэн зүйлс <span className="font-normal text-muted">(заавал биш)</span>
             </span>
             <textarea
               value={fields.modifications}
@@ -271,7 +282,7 @@ export function PostForm({
           </label>
           <label className="label flex-[1_1_300px]">
             <span>
-              6 · Нэмэлт тайлбар <span className="font-normal text-muted">(заавал биш)</span>
+              7 · Нэмэлт тайлбар <span className="font-normal text-muted">(заавал биш)</span>
             </span>
             <textarea
               value={fields.description}
@@ -283,7 +294,7 @@ export function PostForm({
         </section>
 
         <section className="card flex flex-col gap-3.5 p-6">
-          <h2 className="m-0 text-[18px] font-bold">7 · Үнэ</h2>
+          <h2 className="m-0 text-[18px] font-bold">8 · Үнэ</h2>
           <div className="flex h-16 max-w-[420px] items-center gap-2 rounded-[14px] border-2 border-ink bg-card px-4">
             <input
               inputMode="numeric"

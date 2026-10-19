@@ -3,6 +3,7 @@
 import type { ContractTerms } from "./contract";
 import { money } from "./format";
 import type { Plan } from "./types";
+import { emptySpecFields, specFieldsFrom, specsToDb, type CarSpecs, type SpecFields } from "./specs";
 
 export type AdDraft = {
   brand: string;
@@ -17,9 +18,9 @@ export type AdDraft = {
   modifications: string | null;
   description: string | null;
   price: number;
-};
+} & ReturnType<typeof specsToDb>;
 
-export type AdFields = {
+export type AdFields = SpecFields & {
   brand: string;
   model: string;
   trim: string;
@@ -47,7 +48,38 @@ export const emptyAdFields = (phone = ""): AdFields => ({
   modifications: "",
   description: "",
   price: "",
+  ...emptySpecFields(),
 });
+
+/** Байгаа зарыг хуулж шинэ зарын маягт бөглөх (зураг, дугааргүй) */
+export function fieldsFromAd(
+  a: CarSpecs & {
+    brand: string;
+    model: string;
+    trim: string | null;
+    phone?: string | null;
+    year_made: number;
+    year_imported: number | null;
+    options: string[];
+    modifications: string | null;
+    description: string | null;
+    price: number;
+  },
+): AdFields {
+  return {
+    ...emptyAdFields(a.phone ?? ""),
+    brand: a.brand,
+    model: a.model,
+    trim: a.trim ?? "",
+    yearMade: String(a.year_made),
+    yearImported: a.year_imported ? String(a.year_imported) : "",
+    options: a.options ?? [],
+    modifications: a.modifications ?? "",
+    description: a.description ?? "",
+    price: priceInput(String(a.price)),
+    ...specFieldsFrom(a),
+  };
+}
 
 /** Улсын/арлын дугаар: илүү зайг хасаж том үсгээр */
 export const normalizeCode = (v: string) => v.trim().replace(/\s+/g, " ").toUpperCase();
@@ -75,6 +107,7 @@ export function toDraft(f: AdFields): AdDraft {
     modifications: f.modifications.trim() || null,
     description: f.description.trim() || null,
     price: Number(f.price.replace(/\D/g, "")),
+    ...specsToDb(f),
   };
 }
 

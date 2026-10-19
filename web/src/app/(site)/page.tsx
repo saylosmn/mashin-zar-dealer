@@ -6,6 +6,7 @@ import { getProfile, getSettings } from "@/lib/data";
 import { AdCard } from "@/components/AdCard";
 import { IconBell, IconSearch } from "@/components/icons";
 import { BRANDS } from "@shared/cars";
+import { FUEL, STEERING, TRANSMISSION, opts } from "@shared/specs";
 import { saveFilterAlert } from "./actions";
 import type { PublicAd } from "@shared/types";
 
@@ -41,6 +42,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     if (Number(sp.ymax)) query = query.lte("year_made", Number(sp.ymax));
     if (Number(sp.imin)) query = query.gte("year_imported", Number(sp.imin));
     if (Number(sp.imax)) query = query.lte("year_imported", Number(sp.imax));
+    if (Number(sp.kmax)) query = query.lte("mileage_km", Number(sp.kmax) * 1000);
+    if (sp.fuel && sp.fuel in FUEL) query = query.eq("fuel", sp.fuel);
+    if (sp.tr && sp.tr in TRANSMISSION) query = query.eq("transmission", sp.tr);
+    if (sp.st && sp.st in STEERING) query = query.eq("steering", sp.st);
     return query;
   }
 
@@ -50,6 +55,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     if (withFeatured && !sp.sort) query = query.order("featured", { ascending: false });
     if (sp.sort === "price_asc") query = query.order("price", { ascending: true });
     else if (sp.sort === "price_desc") query = query.order("price", { ascending: false });
+    else if (sp.sort === "year_desc") query = query.order("year_made", { ascending: false });
+    else if (sp.sort === "km_asc") query = query.order("mileage_km", { ascending: true, nullsFirst: false });
     else query = query.order("approved_at", { ascending: false, nullsFirst: false });
     return query.range((page - 1) * PAGE, page * PAGE - 1);
   }
@@ -83,7 +90,19 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const pages = Math.max(1, Math.ceil(total / PAGE));
   const cy = settings.cutoff_year;
   const hasFilters = Boolean(
-    q || sp.brand || sp.model || sp.pmin || sp.pmax || sp.ymin || sp.ymax || sp.imin || sp.imax,
+    q ||
+      sp.brand ||
+      sp.model ||
+      sp.pmin ||
+      sp.pmax ||
+      sp.ymin ||
+      sp.ymax ||
+      sp.imin ||
+      sp.imax ||
+      sp.kmax ||
+      sp.fuel ||
+      sp.tr ||
+      sp.st,
   );
 
   const tabs = [
@@ -122,7 +141,17 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         <MobileCollapse
           label="Шүүлтүүр"
           count={
-            [sp.brand, sp.model, sp.pmin || sp.pmax, sp.ymin || sp.ymax, sp.imin || sp.imax].filter(Boolean).length
+            [
+              sp.brand,
+              sp.model,
+              sp.pmin || sp.pmax,
+              sp.ymin || sp.ymax,
+              sp.imin || sp.imax,
+              sp.kmax,
+              sp.fuel,
+              sp.tr,
+              sp.st,
+            ].filter(Boolean).length
           }
           className="max-w-full flex-[1_1_240px]"
         >
@@ -217,11 +246,43 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
                 </div>
               </fieldset>
               <label className="label">
+                Гүйлт (дээд тал нь, мянган км)
+                <input
+                  name="kmax"
+                  type="number"
+                  min="0"
+                  defaultValue={sp.kmax}
+                  placeholder="Жишээ: 150"
+                  className="input h-11"
+                />
+              </label>
+              {(
+                [
+                  ["fuel", "Шатахуун", opts(FUEL)],
+                  ["tr", "Хурдны хайрцаг", opts(TRANSMISSION)],
+                  ["st", "Жолоо", opts(STEERING)],
+                ] as const
+              ).map(([name, label, items]) => (
+                <label key={name} className="label">
+                  {label}
+                  <select name={name} defaultValue={sp[name] ?? ""} className="input h-11">
+                    <option value="">Бүгд</option>
+                    {items.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
+              <label className="label">
                 Эрэмбэ
                 <select name="sort" defaultValue={sp.sort ?? ""} className="input h-11">
                   <option value="">Шинэ нь эхэндээ</option>
                   <option value="price_asc">Үнэ өсөхөөр</option>
                   <option value="price_desc">Үнэ буурахаар</option>
+                  <option value="year_desc">Он шинэ нь эхэндээ</option>
+                  <option value="km_asc">Гүйлт бага нь эхэндээ</option>
                 </select>
               </label>
               <button className="btn btn-ink h-[46px]">

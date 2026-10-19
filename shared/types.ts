@@ -1,3 +1,5 @@
+import type { CarSpecs } from "./specs";
+
 export type Role = "user" | "admin" | "dealer" | "leasing" | "agent";
 export type AdStatus = "pending" | "active" | "sold" | "rejected" | "hidden";
 export type Category = "new" | "old";
@@ -22,7 +24,7 @@ export type Profile = {
   created_at: string;
 };
 
-export type Ad = {
+export type Ad = CarSpecs & {
   id: string;
   user_id: string;
   brand: string;
@@ -82,7 +84,7 @@ export type Payment = {
   created_at: string;
 };
 
-export type PublicAd = {
+export type PublicAd = CarSpecs & {
   id: string;
   brand: string;
   model: string;

@@ -9,7 +9,7 @@ import { IconCheck, IconClose } from "@/components/icons";
 import { deleteMyAd, renewAd } from "../actions";
 import { expiryInfo, isFeatured } from "@shared/commission";
 import { PAY_STATUS, needsAction } from "@/lib/payments";
-import { dealerSetStatus } from "@/actions/ads";
+import { dealerSetReserved, dealerSetStatus } from "@/actions/ads";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import type { Ad, AdStatus, Payment, PublicAd } from "@shared/types";
 
@@ -60,6 +60,14 @@ export default async function MyAdsPage({
     ? [TABS[0], { key: "active", label: "Идэвхтэй" }, { key: "hidden", label: "Нуусан" }, ...TABS.slice(3)]
     : [{ key: "saved", label: "Хадгалсан" }];
   const tab = admin ? sp.tab : "saved";
+  // Зар бүрийн сонирхол: үзэлт, утас харсан, хадгалсан
+  type Stat = { ad_id: string; views: number; phone_views: number; saves: number };
+  const statRows = admin && ads.length ? (await supabase.rpc("ad_stats", { p_ids: ads.map((a) => a.id) })).data : [];
+  const statOf = new Map(((statRows ?? []) as Stat[]).map((r) => [r.ad_id, r]));
+  const statText = (a: Ad) => {
+    const st = statOf.get(a.id);
+    return st ? `👁 ${num(st.views)} · ☎ ${num(st.phone_views)} · ♥ ${num(st.saves)}` : num(a.views);
+  };
   const shown = tab && tab !== "saved" ? ads.filter((a) => a.status === tab) : ads;
   const countOf = (k?: string) =>
     k === "saved" ? (favAds ?? []).length : k ? ads.filter((a) => a.status === k).length : ads.length;
@@ -161,7 +169,7 @@ export default async function MyAdsPage({
                     <span className="h-display text-[15px]">{money(a.price)}</span>
                     <span className="text-[12px] text-muted">
                       {categoryLabel(a.category, settings.cutoff_year)} · {dateShort(a.created_at)}
-                      {a.status !== "pending" ? ` · ${num(a.views)} үзэлт` : ""}
+                      {a.status !== "pending" ? ` · ${statText(a)}` : ""}
                     </span>
                   </div>
                 </Link>
@@ -190,7 +198,7 @@ export default async function MyAdsPage({
                   <th>Ангилал</th>
                   <th>Үнэ</th>
                   <th>Төлөв</th>
-                  <th>Үзэлт</th>
+                  <th title="Үзэлт · Утас харсан · Хадгалсан">Сонирхол</th>
                   <th>Огноо</th>
                   <th>
                     <span className="sr-only">Үйлдэл</span>
@@ -224,7 +232,7 @@ export default async function MyAdsPage({
                         <AdLife a={a} pay={payOf.get(a.id)} />
                       </div>
                     </td>
-                    <td className="mono">{a.status === "pending" ? "—" : num(a.views)}</td>
+                    <td className="mono text-[13px] whitespace-nowrap">{a.status === "pending" ? "—" : statText(a)}</td>
                     <td className="text-muted">{dateShort(a.created_at)}</td>
                     <td className="text-right">
                       <AdActions
@@ -267,6 +275,7 @@ function AdLife({ a, pay }: { a: Ad; pay?: OpenPay }) {
           {e.expired ? "Хугацаа дууссан — нийтэд харагдахгүй" : `${e.daysLeft} хоног үлдсэн`}
         </span>
       )}
+      {a.reserved && <span className="badge bg-pending-bg text-pending-fg">🔖 Захиалгатай</span>}
       {isFeatured(a.featured_until) && (
         <span className="text-[12px] font-semibold text-pending-fg">
           ⭐ Онцлох · {dateShort(a.featured_until)} хүртэл
@@ -293,6 +302,7 @@ function AdActions({ a, dealer, className, pay }: { a: Ad; dealer: boolean; clas
           💳 Төлөх
         </Link>
       ) : (
+        !dealer &&
         a.status === "active" &&
         !e.expired &&
         !featured &&
@@ -317,6 +327,14 @@ function AdActions({ a, dealer, className, pay }: { a: Ad; dealer: boolean; clas
           <Link href={`/my/${a.id}/edit`} className="btn btn-sm btn-ghost">
             Засах
           </Link>
+          {a.status === "active" && (
+            <form action={dealerSetReserved}>
+              <input type="hidden" name="id" value={a.id} />
+              <input type="hidden" name="back" value="/my" />
+              <input type="hidden" name="reserved" value={a.reserved ? "0" : "1"} />
+              <button className="btn btn-sm btn-ghost">{a.reserved ? "Захиалга цуцлах" : "🔖 Захиалгатай"}</button>
+            </form>
+          )}
           {(a.status === "active" || a.status === "hidden") && (
             <form action={dealerSetStatus}>
               <input type="hidden" name="id" value={a.id} />
@@ -337,6 +355,11 @@ function AdActions({ a, dealer, className, pay }: { a: Ad; dealer: boolean; clas
             </ConfirmButton>
           </form>
         </>
+      )}
+      {dealer && (
+        <Link href={`/post?from=${a.id}`} className="btn btn-sm btn-ghost" title="Энэ зарын мэдээллээр шинэ зар үүсгэх">
+          Хуулах
+        </Link>
       )}
       {a.status !== "sold" && (
         <form action={deleteMyAd}>

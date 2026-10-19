@@ -128,6 +128,16 @@ export async function dealerSetStatus(fd: FormData) {
   );
 }
 
+/** Дилер: «Захиалгатай» тэмдэг тавих / авах */
+export async function dealerSetReserved(fd: FormData) {
+  await requireAdmin();
+  const supabase = await createClient();
+  const on = String(fd.get("reserved")) === "1";
+  await run(fd, "/my", on ? "Захиалгатай гэж тэмдэглэлээ" : "Захиалга цуцлагдлаа", () =>
+    supabase.rpc("dealer_set_reserved", { p_ad: String(fd.get("id")), p_reserved: on }),
+  );
+}
+
 export async function resolveFlag(fd: FormData) {
   await requireAdmin();
   const supabase = await createClient();

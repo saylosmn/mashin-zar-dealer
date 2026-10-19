@@ -12,10 +12,18 @@ import { AdCard, Button, CardSkeleton, StateView, T } from "@/components/ui";
 import { BrandRow } from "@/components/Brand";
 import { useLiveSync } from "@/lib/live";
 import type { PublicAd } from "@shared/types";
+import { FUEL, STEERING, TRANSMISSION, opts } from "@shared/specs";
+import { Choice } from "@/features/post/SpecInputs";
+
+/** Нарийвчилсан шүүлтүүр: дээд үнэ (сая ₮), дээд гүйлт (мянган км), доод он, шатахуун, хайрцаг, жолоо */
+type Adv = { pmax: string; kmax: string; ymin: string; fuel: string; tr: string; st: string };
+const NO_ADV: Adv = { pmax: "", kmax: "", ymin: "", fuel: "", tr: "", st: "" };
+const advCount = (a: Adv) => Object.values(a).filter(Boolean).length;
+const digits = (v: string) => v.replace(/\D/g, "").slice(0, 7);
 
 const PAGE = 20;
 type Cat = "all" | "new" | "old";
-type Sort = "new" | "price_asc" | "price_desc";
+type Sort = "new" | "price_asc" | "price_desc" | "km_asc";
 
 export default function Home() {
   const { settings, session, profile } = useAuth();
@@ -33,6 +41,9 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [unread, setUnread] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const [adv, setAdv] = useState<Adv>(NO_ADV);
+  const [advDraft, setAdvDraft] = useState<Adv>(NO_ADV);
+  const [showAdv, setShowAdv] = useState(false);
 
   const loadedRef = useRef(0);
   loadedRef.current = ads.length;
@@ -48,10 +59,16 @@ export default function Home() {
           const term = query.replace(/[,()%*]/g, " ").trim();
           if (term) req = req.or(`brand.ilike.%${term}%,model.ilike.%${term}%,trim.ilike.%${term}%`);
           if (brand) req = req.eq("brand", brand);
+          if (Number(adv.pmax)) req = req.lte("price", Number(adv.pmax) * 1_000_000);
+          if (Number(adv.kmax)) req = req.lte("mileage_km", Number(adv.kmax) * 1000);
+          if (Number(adv.ymin)) req = req.gte("year_made", Number(adv.ymin));
+          if (adv.fuel) req = req.eq("fuel", adv.fuel);
+          if (adv.tr) req = req.eq("transmission", adv.tr);
+          if (adv.st) req = req.eq("steering", adv.st);
           // Онцлох (VIP) зар эхэндээ
-          if (withFeatured && sort !== "price_asc" && sort !== "price_desc")
-            req = req.order("featured", { ascending: false });
+          if (withFeatured && sort === "new") req = req.order("featured", { ascending: false });
           if (sort === "price_asc") req = req.order("price", { ascending: true });
+          else if (sort === "km_asc") req = req.order("mileage_km", { ascending: true, nullsFirst: false });
           else if (sort === "price_desc") req = req.order("price", { ascending: false });
           else req = req.order("approved_at", { ascending: false, nullsFirst: false });
           return req.range(offset, offset + size - 1);
@@ -69,7 +86,7 @@ export default function Home() {
         setRefreshing(false);
       }
     },
-    [cat, query, brand, sort],
+    [cat, query, brand, sort, adv],
   );
 
   useEffect(() => {
@@ -208,10 +225,98 @@ export default function Home() {
           on={!!brand || showFilters}
           onPress={() => setShowFilters((v) => !v)}
         />
+        <Chip
+          icon="sliders"
+          label={advCount(adv) ? `Нарийвчилсан · ${advCount(adv)}` : "Нарийвчилсан"}
+          on={advCount(adv) > 0 || showAdv}
+          onPress={() => {
+            setAdvDraft(adv);
+            setShowAdv((v) => !v);
+          }}
+        />
         <Chip label="Шинэ нь эхэндээ" on={sort === "new"} onPress={() => setSort("new")} />
         <Chip label="Үнэ ↑" on={sort === "price_asc"} onPress={() => setSort("price_asc")} />
         <Chip label="Үнэ ↓" on={sort === "price_desc"} onPress={() => setSort("price_desc")} />
+        <Chip label="Гүйлт бага" on={sort === "km_asc"} onPress={() => setSort("km_asc")} />
       </ScrollView>
+      {showAdv && (
+        <View
+          style={{
+            gap: 12,
+            backgroundColor: C.card,
+            borderRadius: 14,
+            borderWidth: 1,
+            borderColor: C.line,
+            padding: 14,
+          }}
+        >
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            {(
+              [
+                ["pmax", "Дээд үнэ (сая ₮)", "60"],
+                ["kmax", "Дээд гүйлт (мянган км)", "150"],
+                ["ymin", "Он (-аас хойш)", "2015"],
+              ] as const
+            ).map(([k, label, ph]) => (
+              <View key={k} style={{ flex: 1, gap: 4 }}>
+                <T style={{ fontSize: 11, color: C.muted }} numberOfLines={2}>
+                  {label}
+                </T>
+                <TextInput
+                  value={advDraft[k]}
+                  onChangeText={(v) => setAdvDraft((a) => ({ ...a, [k]: digits(v) }))}
+                  keyboardType="number-pad"
+                  placeholder={ph}
+                  placeholderTextColor="#9AA0A9"
+                  style={{
+                    height: 42,
+                    borderWidth: 1,
+                    borderColor: C.line2,
+                    borderRadius: 10,
+                    paddingHorizontal: 10,
+                    fontFamily: F.mono,
+                    fontSize: 14,
+                    color: C.ink,
+                  }}
+                />
+              </View>
+            ))}
+          </View>
+          <T style={{ fontSize: 12, color: C.muted }}>Шатахуун</T>
+          <Choice items={opts(FUEL)} value={advDraft.fuel} onChange={(v) => setAdvDraft((a) => ({ ...a, fuel: v }))} />
+          <T style={{ fontSize: 12, color: C.muted }}>Хурдны хайрцаг</T>
+          <Choice
+            items={opts(TRANSMISSION)}
+            value={advDraft.tr}
+            onChange={(v) => setAdvDraft((a) => ({ ...a, tr: v }))}
+          />
+          <T style={{ fontSize: 12, color: C.muted }}>Жолоо</T>
+          <Choice items={opts(STEERING)} value={advDraft.st} onChange={(v) => setAdvDraft((a) => ({ ...a, st: v }))} />
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Button
+              title="Цэвэрлэх"
+              variant="ghost"
+              small
+              style={{ flex: 1 }}
+              onPress={() => {
+                setAdvDraft(NO_ADV);
+                setAdv(NO_ADV);
+                setShowAdv(false);
+              }}
+            />
+            <Button
+              title="Хайх"
+              icon="search"
+              small
+              style={{ flex: 1 }}
+              onPress={() => {
+                setAdv(advDraft);
+                setShowAdv(false);
+              }}
+            />
+          </View>
+        </View>
+      )}
       {showFilters && (
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
           <Chip label="Бүх марк" on={!brand} onPress={() => setBrand(null)} />

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cache } from "react";
 import { notFound, redirect } from "next/navigation";
+import { specRows } from "@shared/specs";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile, getSettings } from "@/lib/data";
@@ -175,10 +176,16 @@ export default async function AdPage({ params }: { params: Promise<{ id: string 
             {ad.trim ? ` · ${ad.trim}` : ""}
           </h1>
           <div className="h-display text-[32px]">{money(ad.price)}</div>
+          {ad.reserved && ad.status === "active" && (
+            <p className="m-0 rounded-xl bg-pending-bg px-4 py-3 text-[14px] font-semibold text-pending-fg">
+              🔖 Энэ машин захиалгатай байна. Захиалга цуцлагдвал худалдаанд гарна.
+            </p>
+          )}
           <dl className="m-0 grid grid-cols-2 gap-2">
             {[
               ["Үйлдвэрлэсэн он", String(ad.year_made), false],
               ["Орж ирсэн он", ad.year_imported ? String(ad.year_imported) : "—", false],
+              ...specRows(ad).map(([k, v]) => [k, v, false]),
             ].map(([k, v, mono]) => (
               <div key={String(k)} className="flex flex-col gap-1 rounded-xl bg-paper p-3">
                 <dt className="text-[12px] text-muted">{k}</dt>

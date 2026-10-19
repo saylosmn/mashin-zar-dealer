@@ -17,6 +17,7 @@ import {
 import { Image } from "expo-image";
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { specLine, type CarSpecs } from "@shared/specs";
 import { C, F } from "@/lib/theme";
 import { STATUS, categoryLabel, money } from "@/lib/format";
 import { photoUrl } from "@/lib/supabase";
@@ -174,7 +175,7 @@ export function AdCard({
     category: Category;
     seller_shop?: string | null;
     featured?: boolean;
-  };
+  } & CarSpecs;
   cy: number;
   onPress: () => void;
 }) {
@@ -189,7 +190,23 @@ export function AdCard({
         <View style={{ position: "absolute", left: 12, top: 12 }}>
           <CatChip c={ad.category} cy={cy} />
         </View>
-        {ad.featured ? (
+        {ad.reserved ? (
+          <View
+            style={{
+              position: "absolute",
+              right: 12,
+              top: 12,
+              backgroundColor: C.ink,
+              borderRadius: 4,
+              paddingHorizontal: 7,
+              paddingVertical: 2,
+            }}
+          >
+            <T w="bold" style={{ fontSize: 11, color: C.yellow }}>
+              Захиалгатай
+            </T>
+          </View>
+        ) : ad.featured ? (
           <View
             style={{
               position: "absolute",
@@ -262,6 +279,11 @@ export function AdCard({
           {ad.year_imported ? ` · Орж ирсэн ${ad.year_imported}` : ""}
           {ad.trim ? ` · ${ad.trim}` : ""}
         </T>
+        {specLine(ad) ? (
+          <T style={{ fontSize: 13, color: C.body }} numberOfLines={1}>
+            {specLine(ad)}
+          </T>
+        ) : null}
         <T w="display" style={{ fontSize: 19 }}>
           {money(ad.price)}
         </T>

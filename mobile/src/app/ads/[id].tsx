@@ -18,6 +18,7 @@ import { useAuth } from "@/lib/auth";
 import { C } from "@/lib/theme";
 import { errMsg, initial, money, timeAgo } from "@/lib/format";
 import { BackButton, Button, CatChip, Photo, Skeleton, StateView, StatusBadge, T, s } from "@/components/ui";
+import { specRows } from "@shared/specs";
 import type { Ad, PublicAd } from "@shared/types";
 import { useLiveSync } from "@/lib/live";
 import { adCache } from "@/lib/cache";
@@ -225,6 +226,13 @@ export default function AdDetail() {
             </Pressable>
           )}
 
+          {ad.reserved && ad.status === "active" && (
+            <View style={{ backgroundColor: C.pendingBg, borderRadius: 12, padding: 12 }}>
+              <T w="semibold" style={{ color: C.pendingFg, fontSize: 14, lineHeight: 20 }}>
+                Энэ машин захиалгатай байна. Захиалга цуцлагдвал худалдаанд гарна.
+              </T>
+            </View>
+          )}
           {ad.status === "pending" && (
             <View style={{ backgroundColor: C.pendingBg, borderRadius: 12, padding: 12 }}>
               <T style={{ color: C.pendingFg, fontSize: 14, lineHeight: 20 }}>
@@ -237,6 +245,7 @@ export default function AdDetail() {
             {[
               ["Үйлдвэрлэсэн он", String(ad.year_made), false],
               ["Орж ирсэн он", ad.year_imported ? String(ad.year_imported) : "—", false],
+              ...specRows(ad).map(([k, v]) => [k, v, false]),
             ].map(([k, v, mono]) => (
               <View
                 key={String(k)}

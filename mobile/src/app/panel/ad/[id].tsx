@@ -5,6 +5,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { useLiveSync } from "@/lib/live";
+import { specRows } from "@shared/specs";
 import { C } from "@/lib/theme";
 import { categoryLong, errMsg, money, timeAgo } from "@/lib/format";
 import { staffAdCache } from "@/lib/cache";
@@ -26,6 +27,7 @@ export default function PanelAd() {
   const [note, setNote] = useState(() => staffAdCache.get(id)?.manager_note ?? "");
   const [rejecting, setRejecting] = useState(false);
   const [reason, setReason] = useState("");
+  const [stat, setStat] = useState<{ views: number; phone_views: number; saves: number } | null>(null);
 
   const load = useCallback(async () => {
     try {
@@ -36,6 +38,7 @@ export default function PanelAd() {
       setAd(a);
       if (a) {
         setNote((n) => (n ? n : (a.manager_note ?? "")));
+        supabase.rpc("ad_stats", { p_ids: [a.id] }).then(({ data: st }) => setStat(st?.[0] ?? null));
       }
     } catch (e) {
       setError(errMsg(e));
@@ -200,8 +203,17 @@ export default function PanelAd() {
             <T w="bold" style={s.h2}>
               Машин
             </T>
-            <Row k="Улсын дугаар" v={ad.plate_number ?? "—"} mono />
-            <Row k="Арлын дугаар (VIN)" v={ad.vin ?? "—"} mono />
+            {stat ? (
+              <Row
+                k="Сонирхол"
+                v={`👁 ${stat.views} үзэлт · ☎ ${stat.phone_views} утас · ♥ ${stat.saves} хадгалсан`}
+              />
+            ) : null}
+            {ad.plate_number ? <Row k="Улсын дугаар" v={ad.plate_number} mono /> : null}
+            {ad.vin ? <Row k="Арлын дугаар (VIN)" v={ad.vin} mono /> : null}
+            {specRows(ad).map(([k, v]) => (
+              <Row key={k} k={k} v={v} />
+            ))}
             <Row k="Үйлдвэрлэсэн он" v={String(ad.year_made)} />
             <Row k="Орж ирсэн он" v={ad.year_imported ? String(ad.year_imported) : "—"} />
             <Row k="Сер" v={ad.trim || "—"} />
@@ -375,6 +387,32 @@ export default function PanelAd() {
                 <Button title="Татгалзах" icon="x-circle" variant="danger" onPress={() => setRejecting(true)} />
               ))}
 
+            {admin && ad.status !== "sold" && (
+              <Button title="Засах" icon="edit-2" variant="ghost" onPress={() => router.push(`/edit/${ad.id}`)} />
+            )}
+            {admin && ad.status === "active" && (
+              <Button
+                title={ad.reserved ? "Захиалга цуцлах" : "Захиалгатай болгох"}
+                icon="bookmark"
+                variant="ghost"
+                loading={busy === "reserve"}
+                onPress={() =>
+                  act(
+                    "reserve",
+                    () => staffRpc("dealer_set_reserved", { p_ad: ad.id, p_reserved: !ad.reserved }),
+                    ad.reserved ? "Захиалга цуцлагдлаа" : "Захиалгатай гэж тэмдэглэлээ",
+                  )
+                }
+              />
+            )}
+            {admin && (
+              <Button
+                title="Хуулж шинэ зар үүсгэх"
+                icon="copy"
+                variant="ghost"
+                onPress={() => router.push(`/post?from=${ad.id}`)}
+              />
+            )}
             {ad.status === "active" && (
               <Button
                 title="Зарагдсан болгох"

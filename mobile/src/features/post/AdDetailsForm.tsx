@@ -5,6 +5,7 @@ import { C, F } from "@/lib/theme";
 import { OptionPicker } from "@/components/OptionPicker";
 import { Field, Input, T, s } from "@/components/ui";
 import { Suggestions } from "./parts";
+import { SpecInputs } from "./SpecInputs";
 
 type Props = {
   fields: AdFields;
@@ -96,7 +97,14 @@ export function AdDetailsForm({ fields, set, cutoff }: Props) {
 
       <View style={{ gap: 12 }}>
         <T w="bold" style={s.h2}>
-          4 · Холбоо барих
+          4 · Үндсэн үзүүлэлт <T style={{ fontSize: 13, color: C.muted }}>(заавал биш)</T>
+        </T>
+        <SpecInputs value={fields} onChange={(k, v) => set(k)(v)} />
+      </View>
+
+      <View style={{ gap: 12 }}>
+        <T w="bold" style={s.h2}>
+          5 · Холбоо барих
         </T>
         <Field label="Утасны дугаар">
           <Input value={fields.phone} onChangeText={set("phone")} keyboardType="phone-pad" mono />
@@ -105,12 +113,12 @@ export function AdDetailsForm({ fields, set, cutoff }: Props) {
 
       <View style={{ gap: 12 }}>
         <T w="bold" style={s.h2}>
-          5 · Нэмэлт опшн
+          6 · Нэмэлт опшн
         </T>
         <OptionPicker value={fields.options} onChange={set("options")} />
       </View>
 
-      <Field label="6 · Нэмж хийсэн зүйлс (заавал биш)">
+      <Field label="7 · Нэмж хийсэн зүйлс (заавал биш)">
         <Input
           value={fields.modifications}
           onChangeText={set("modifications")}
@@ -118,7 +126,7 @@ export function AdDetailsForm({ fields, set, cutoff }: Props) {
           placeholder="Бичихгүй байж болно. Жишээ нь: өвлийн шинэ дугуй, автозапуск..."
         />
       </Field>
-      <Field label="7 · Нэмэлт тайлбар (заавал биш)">
+      <Field label="8 · Нэмэлт тайлбар (заавал биш)">
         <Input
           value={fields.description}
           onChangeText={set("description")}
@@ -130,7 +138,7 @@ export function AdDetailsForm({ fields, set, cutoff }: Props) {
 
       <View style={{ gap: 12 }}>
         <T w="bold" style={s.h2}>
-          8 · Үнэ
+          9 · Үнэ
         </T>
         <View
           style={{

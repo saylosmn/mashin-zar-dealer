@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import { draftError, emptyAdFields, priceInput, toDraft, type AdFields } from "@shared/ad-post";
+import { draftError, emptyAdFields, fieldsFromAd, toDraft, type AdFields } from "@shared/ad-post";
 import type { Ad } from "@shared/types";
 import { supabase, photoUrl } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
@@ -14,18 +14,9 @@ import { uploadAdPhoto } from "@/features/post/backend";
 import { BottomBar, PhotoGrid, type Pic } from "@/features/post/parts";
 
 const fieldsFrom = (a: Ad): AdFields => ({
-  ...emptyAdFields(a.phone),
-  brand: a.brand,
-  model: a.model,
-  trim: a.trim ?? "",
-  yearMade: String(a.year_made),
-  yearImported: a.year_imported ? String(a.year_imported) : "",
+  ...fieldsFromAd(a),
   plate: a.plate_number ?? "",
   vin: a.vin ?? "",
-  options: a.options,
-  modifications: a.modifications ?? "",
-  description: a.description ?? "",
-  price: priceInput(String(a.price)),
 });
 
 /** Авто худалдаа (эсвэл админ) өөрийн зарыг засна: мэдээлэл, үнэ, зураг */

@@ -32,6 +32,8 @@ export function AdRow({ a }: { a: StaffAd }) {
         </T>
         <View style={{ flexDirection: "row", gap: 6, flexWrap: "wrap", marginTop: 2 }}>
           {a.status !== "pending" && <StatusBadge s={a.status} />}
+          {a.reserved && a.status === "active" && <Tag text="Захиалгатай" strong />}
+          {a.status !== "pending" && <Tag text={`👁 ${a.views}`} />}
           {a.contacted_at && <Tag text="Холбогдсон" />}
           {a.offer_amount != null && <Tag text={`Санал ${money(a.offer_amount)}`} strong />}
         </View>

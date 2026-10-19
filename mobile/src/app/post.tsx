@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, BackHandler, KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from "react-native";
-import { router, useFocusEffect } from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import { Feather } from "@expo/vector-icons";
 import { useNetInfo } from "@react-native-community/netinfo";
@@ -9,6 +9,7 @@ import {
   agentCodeInput,
   draftError,
   emptyAdFields,
+  fieldsFromAd,
   planCards,
   publishAd,
   toDraft,
@@ -17,7 +18,7 @@ import {
 } from "@shared/ad-post";
 
 import { termsFrom, tierLines } from "@shared/contract";
-import type { Plan } from "@shared/types";
+import type { Ad, Plan } from "@shared/types";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import { C } from "@/lib/theme";
@@ -55,6 +56,19 @@ export default function PostScreen() {
 
   const [pics, setPics] = useState<Pic[]>([]);
   const [fields, setFields] = useState<AdFields>(() => emptyAdFields(profile?.phone ?? ""));
+  // «Хуулж шинэ зар»: байгаа зарын мэдээллээр бөглөнө (зураггүй)
+  const { from } = useLocalSearchParams<{ from?: string }>();
+  useEffect(() => {
+    if (!from) return;
+    supabase
+      .from("ads")
+      .select("*")
+      .eq("id", from)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setFields(fieldsFromAd(data as Ad));
+      });
+  }, [from]);
   const [agentCode, setAgentCode] = useState("");
   const [agent, setAgent] = useState<Agent | null>(null);
   const [stage, setStage] = useState<Stage>("form");
